@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "compilerArgs": [
+                "*.c",
+                "-O3",
+                "-fuse-ld=lld",
+                "-flto=thin",
+                "-Wl,-O3,--lto-O3",
+                "-Wall",
+                "-lcurl",
+                "-ljson-c",
+                "-lpthread",
+                "-o",
+                "nicholas"
+            ]
+        }
+    ],
+    "version": 4
+}
