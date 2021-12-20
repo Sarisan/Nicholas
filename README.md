@@ -12,4 +12,4 @@ Nicholas is a Telegram bot for searching on Sankaku Channel via inline mode.
 
 ## Build and run
 
-Compile the bot with `clang *.c -O3 -fuse-ld=lld -flto=thin -Wl,-O3,--lto-O3 -Wall -lcurl -ljson-c -lpthread -o nicholas` in the root of repo and enter `./nicholas` to start the bot. You can also compile the bot in VS Code.
+Compile the bot with `clang *.c -O3 -fuse-ld=lld -flto=thin -Wl,-O3,--lto-O3 -Wall -lcurl -ljson-c -lpthread -D_GNU_SOURCE -o nicholas` in the root of repo and enter `./nicholas` to start the bot. You can also compile the bot in VS Code.

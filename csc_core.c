@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include "core.h"
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
