@@ -1,7 +1,6 @@
 #include "core.h"
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
-#include <stdlib.h>
 #include <string.h>
 
 json_object *csc_request(long timeout, const char *api_data, ...) {
@@ -16,7 +15,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     char csc_url[strlen(api_data_args) + 64];
     sprintf(csc_url, "https://capi-v2.sankakucomplex.com/%s", api_data_args);
-    free(api_data_args);
+    bot_free(api_data_args);
 
     struct curl_slist *slist_auth = curl_slist_append(0, csc_authorization_header);
     CURL *get_data = curl_easy_init();
@@ -38,7 +37,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
         return 0;
 
     json_object *data = json_tokener_parse(string.string);
-    free(string.string);
+    bot_free(string.string);
 
     return data;
 }
