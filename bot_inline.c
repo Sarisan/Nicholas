@@ -28,7 +28,7 @@ void bot_inline(struct bot_update *result) {
             }
         }
 
-        for(short args = 0; args < 4; args++) {
+        for(short args = 0; args < 5; args++) {
             if(inline_query[0] == 'b' && !action) {
                 action = 1;
                 memmove(&inline_query[0], &inline_query[1], strlen(inline_query));
