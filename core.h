@@ -32,4 +32,4 @@ int bot_command_parse(const char *input, const char *command_text);
 
 char *bot_strenc(const char *input_string, size_t max_length);
 
-void bot_free(char *string);
+void bot_free(size_t number, ...);

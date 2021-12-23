@@ -378,7 +378,7 @@ void bot_inline(struct bot_update *result) {
                     }
 
                     sprintf(csc_caption, "<b>ID:</b> <code>%d</code>\n<b>Date:</b> %s\n\n<b>%s</b>", csc_id, csc_date, csc_name);
-                    bot_free(csc_name);
+                    bot_free(1, csc_name);
                     sprintf(csc_button, "%s%d", CSC_POOL_URL, csc_id);
                     sprintf(csc_button_text, "%s", csc_rating_s);
                     sprintf(csc_button1, "%d", page);

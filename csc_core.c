@@ -15,7 +15,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     char csc_url[strlen(api_data_args) + 64];
     sprintf(csc_url, "https://capi-v2.sankakucomplex.com/%s", api_data_args);
-    bot_free(api_data_args);
+    bot_free(1, api_data_args);
 
     struct curl_slist *slist_auth = curl_slist_append(0, csc_authorization_header);
     CURL *get_data = curl_easy_init();
@@ -37,7 +37,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
         return 0;
 
     json_object *data = json_tokener_parse(string.string);
-    bot_free(string.string);
+    bot_free(1, string.string);
 
     return data;
 }
@@ -128,7 +128,7 @@ void bot_csc_post(char *csc_info, json_object **csc_data, int csc_id) {
     strftime(csc_date, sizeof(csc_date), "%d.%m.%Y", date);
     strftime(csc_time, sizeof(csc_time), "%T %Z", date);
     sprintf(csc_info, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> <code>%s</code> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_sample_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(*csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(*csc_data, "sample_width")), json_object_get_string(json_object_object_get(*csc_data, "sample_height")), json_object_get_string(json_object_object_get(*csc_data, "width")), json_object_get_string(json_object_object_get(*csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_time, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(*csc_data, "md5")), json_object_get_int(json_object_object_get(*csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
-    bot_free(csc_author);
+    bot_free(1, csc_author);
 }
 
 void bot_csc_pool(char *csc_info, json_object **csc_data, int csc_id) {
@@ -147,7 +147,7 @@ void bot_csc_pool(char *csc_info, json_object **csc_data, int csc_id) {
     if(strcmp(csc_description, "")) {
         char *csc_description_encoded = bot_strenc(csc_description, 2048);
         sprintf(csc_description_s, "<code>%s</code>", csc_description_encoded);
-        bot_free(csc_description_encoded);
+        bot_free(1, csc_description_encoded);
     } else {
         strcpy(csc_description_s, "none");
     }
@@ -187,8 +187,7 @@ void bot_csc_pool(char *csc_info, json_object **csc_data, int csc_id) {
     }
 
     sprintf(csc_info, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Description:</b> %s\n<b>Date:</b> %s\n<b>Author:</b> %s\n<b>Pages:</b> %d\n<b>Rating:</b> %s\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Cover post ID:</b> <code>%d</code>\n<b>Name:</b> <code>%s</code>", csc_sample_url, csc_id, csc_description_s, json_object_get_string(json_object_object_get(*csc_data, "created_at")), csc_author, json_object_get_int(json_object_object_get(*csc_data, "visible_post_count")), csc_rating_s, csc_vote_count, csc_vote_average, json_object_get_int(json_object_object_get(cover_post, "id")), csc_name);
-    bot_free(csc_author);
-    bot_free(csc_name);
+    bot_free(2, csc_author, csc_name);
 }
 
 void bot_csc_tag(char *csc_tag, json_object **csc_data, int csc_id) {
@@ -202,7 +201,7 @@ void bot_csc_tag(char *csc_tag, json_object **csc_data, int csc_id) {
     if(csc_name_en) {
         char *csc_name_en_encoded = bot_strenc(csc_name_en, 1024);
         sprintf(csc_name_en_s, "<code>%s</code>", csc_name_en_encoded);
-        bot_free(csc_name_en_encoded);
+        bot_free(1, csc_name_en_encoded);
     } else {
         strcpy(csc_name_en_s, "none");
     }
@@ -210,7 +209,7 @@ void bot_csc_tag(char *csc_tag, json_object **csc_data, int csc_id) {
     if(csc_name_ja) {
         char *csc_name_ja_encoded = bot_strenc(csc_name_ja, 1024);
         sprintf(csc_name_ja_s, "<code>%s</code>", csc_name_ja_encoded);
-        bot_free(csc_name_ja_encoded);
+        bot_free(1, csc_name_ja_encoded);
     } else {
         strcpy(csc_name_ja_s, "none");
     }
@@ -254,5 +253,5 @@ void bot_csc_tag(char *csc_tag, json_object **csc_data, int csc_id) {
     }
 
     sprintf(csc_tag, "<b>ID:</b> <code>%d</code>\n<b>Eng name:</b> %s\n<b>Jap name:</b> %s\n<b>Type:</b> %s\n<b>Post count:</b> %d\n<b>Book count:</b> %d\n<b>Rating:</b> %s\n<b>Name:</b> <code>%s</code>", csc_id, csc_name_en_s, csc_name_ja_s, csc_type_s, json_object_get_int(json_object_object_get(*csc_data, "post_count")), json_object_get_int(json_object_object_get(*csc_data, "pool_count")), csc_rating_s, csc_name);
-    bot_free(csc_name);
+    bot_free(1, csc_name);
 }

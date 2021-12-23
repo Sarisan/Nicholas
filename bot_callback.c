@@ -67,7 +67,7 @@ void bot_callback(struct bot_update *result) {
 
                     char *tag_encoded = bot_strenc(json_object_get_string(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "name")), 64);
                     sprintf(tag, "<code>%s</code> ", tag_encoded);
-                    bot_free(tag_encoded);
+                    bot_free(1, tag_encoded);
 
                     switch(json_object_get_int(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "type"))) {
                         case 3:

@@ -198,6 +198,12 @@ char *bot_strenc(const char *input_string, size_t max_length) {
     return output_string;
 }
 
-void bot_free(char *string) {
-    free(string);
+void bot_free(size_t number, ...) {
+    va_list args;
+    va_start(args, number);
+
+    for(size_t n = 0; n < number; n++)
+        free(va_arg(args, void *));
+
+    va_end(args);
 }
