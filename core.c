@@ -59,12 +59,11 @@ int main(int argc, char **argv) {
             {0, 0, 0, 0}
         };
 
-        int option_index;
-        int c = getopt_long(argc, argv, "h", long_options, &option_index);
-        if(c == -1)
+        int option = getopt_long(argc, argv, "h", long_options, 0);
+        if(option == -1)
             break;
 
-        switch(c) {
+        switch(option) {
             case 'h':
                 print_help = 1;
                 break;
