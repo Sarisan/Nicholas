@@ -3,14 +3,20 @@
 #include <getopt.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <signal.h>
 #include <string.h>
 
 char *api, *admin, *login, *password;
+int global_signal;
 
 void bot_commands(struct bot_update *result);
 void bot_inline(struct bot_update *result);
 void bot_callback(struct bot_update *result);
 void bot_commands_private(struct bot_update *result);
+
+void signal_handler(int signal_int) {
+    global_signal = signal_int;
+}
 
 void *bot_parse(void *data) {
     struct bot_update result = *(struct bot_update *)data;
@@ -39,6 +45,8 @@ void *bot_parse(void *data) {
 }
 
 int main(int argc, char **argv) {
+    signal(SIGINT, signal_handler);
+
     int print_help = 0;
 
     while(1) {
@@ -106,8 +114,9 @@ int main(int argc, char **argv) {
         return 1;
 
     while(offset) {
-        struct bot_update result; 
+        struct bot_update result;
         result.update = bot_get_update(offset);
+
         if(result.update) {
             result.update_id = json_object_get_int(json_object_object_get(result.update, "update_id"));
             pthread_t thread = result.update_id;
@@ -116,6 +125,10 @@ int main(int argc, char **argv) {
             pthread_create(&thread, 0, bot_parse, &result);
             pthread_detach(thread);
         }
+
+        if(global_signal == 2)
+            break;
+
         csc_check(&csc_auth_time);
     }
     return 0;
