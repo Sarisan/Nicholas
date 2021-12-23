@@ -174,20 +174,26 @@ int bot_command_parse(const char *input, const char *command_text) {
 
 char *bot_strenc(const char *input_string, size_t max_length) {
     size_t length = max_length ? max_length : strlen(input_string);
-    char *output_string = malloc(sizeof(char) * length ? length * 5 : 1);
+    char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
     if(output_string == 0)
         return 0;
 
-    strcpy(output_string, "");
+    size_t string_size = 0;
 
     for(short c = 0; input_string[c] && c < length; c++) {
-        if(input_string[c] == '<')
-            strcat(output_string, "&#60;");
-        else if(input_string[c] == '>')
-            strcat(output_string, "&#62;");
-        else
-            sprintf(output_string + strlen(output_string), "%c", input_string[c]);
+        if(input_string[c] == '<') {
+            memcpy(output_string + string_size, "&#60;", 5);
+            string_size += 5;
+        } else if(input_string[c] == '>') {
+            memcpy(output_string + string_size, "&#62;", 5);
+            string_size += 5;
+        } else {
+            memcpy(output_string + string_size, &input_string[c], 1);
+            string_size += 1;
+        }
     }
+
+    output_string[string_size] = 0;
 
     return output_string;
 }
