@@ -85,13 +85,13 @@ void bot_inline(struct bot_update *result) {
             page = offset + 1;
 
         if(!action)
-            data = csc_request(9L, "posts?page=%d&tags=%s", page, query);
+            data = csc_request(8L, "posts?page=%d&tags=%s", page, query);
         else if(action == 1)
-            data = csc_request(9L, "pools?page=%d&tags=%s", page, query);
+            data = csc_request(8L, "pools?page=%d&tags=%s", page, query);
         else if(action == 2)
-            data = csc_request(9L, "pools?page=%d&name=%s", page, query);
+            data = csc_request(8L, "pools?page=%d&name=%s", page, query);
         else if(action == 3)
-            data = csc_request(9L, "tags?page=%d&name=%s", page, query);
+            data = csc_request(8L, "tags?page=%d&name=%s", page, query);
 
         if(json_object_get_type(data) == json_type_array) {
             while(json_object_array_get_idx(data, array)) {
@@ -526,9 +526,9 @@ void bot_inline(struct bot_update *result) {
             json_object *csc_data;
 
             if(strcmp(query, "book"))
-                csc_data = csc_request(9L, "posts/%s/", argument);
+                csc_data = csc_request(8L, "posts/%s/", argument);
             else
-                csc_data = csc_request(9L, "pools/%s/", argument);
+                csc_data = csc_request(8L, "pools/%s/", argument);
 
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
