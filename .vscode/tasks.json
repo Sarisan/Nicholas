@@ -15,7 +15,6 @@
 				"-lcurl",
 				"-ljson-c",
 				"-lpthread",
-				"-D_GNU_SOURCE",
 				"-o",
 				"nicholas"
 			],

@@ -5,17 +5,16 @@
 
 json_object *csc_request(long timeout, const char *api_data, ...) {
     va_list args;
-    char *api_data_args;
+    char api_data_args[1024];
     extern char csc_authorization_header[512];
     struct bot_curl_string string = {0};
 
     va_start(args, api_data);
-    vasprintf(&api_data_args, api_data, args);
+    vsnprintf(api_data_args, sizeof(api_data_args), api_data, args); 
     va_end(args);
 
     char csc_url[strlen(api_data_args) + 64];
     sprintf(csc_url, "https://capi-v2.sankakucomplex.com/%s", api_data_args);
-    bot_free(1, api_data_args);
 
     struct curl_slist *slist_auth = curl_slist_append(0, csc_authorization_header);
     CURL *get_data = curl_easy_init();
