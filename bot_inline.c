@@ -9,7 +9,7 @@ void bot_inline(struct bot_update *result) {
 
     const char *inline_query_id = json_object_get_string(json_object_object_get(json_object_object_get(result->update, "inline_query"), "id"));
 
-    sprintf(inline_query, "%.1024s", result->inline_query);
+    snprintf(inline_query, sizeof(inline_query), "%s", result->inline_query);
     strcpy(arguments, "");
     pre_query = "";
     strcpy(query, "");
@@ -17,7 +17,7 @@ void bot_inline(struct bot_update *result) {
     if(sscanf(result->inline_query, "%hd", &page) == 1) {
         char page_buffer[8], first_word[4];
 
-        sprintf(page_buffer, "%d", page);
+        snprintf(page_buffer, sizeof(page_buffer), "%d", page);
 
         memmove(&inline_query[0], &inline_query[strlen(page_buffer)], strlen(inline_query));
 
@@ -98,7 +98,7 @@ void bot_inline(struct bot_update *result) {
                 json_object *csc_data = json_object_array_get_idx(data, array);
                 json_object *csc_result = json_object_new_object();
                 if(!action) {
-                    char *csc_rating_s = "", csc_size_s[16], *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, *csc_format, csc_sample_url[512], csc_preview_url[512], csc_date[16], csc_caption[128], csc_button[128], csc_button_text[32], csc_button_text1[32], csc_button1[2048], csc_button2[32], csc_button3[32];
+                    char *csc_rating_s = "", csc_size_s[16], *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, *csc_format, csc_sample_url[512], csc_preview_url[512], csc_date[16], csc_caption[128], csc_button[128], csc_button_text[32], csc_button_text1[32], csc_button1[1024], csc_button2[32], csc_button3[32];
 
                     int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
                     const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
@@ -117,13 +117,13 @@ void bot_inline(struct bot_update *result) {
                         csc_rating_s = "Explicit";
 
                     if(csc_size > 1073741824)
-                        sprintf(csc_size_s, "%.2f GiB", csc_size / 1073741824);
+                        snprintf(csc_size_s, sizeof(csc_size_s), "%.2f GiB", csc_size / 1073741824);
                     else if(csc_size > 1048576)
-                        sprintf(csc_size_s, "%.2f MiB", csc_size / 1048576);
+                        snprintf(csc_size_s, sizeof(csc_size_s), "%.2f MiB", csc_size / 1048576);
                     else if(csc_size > 1024)
-                        sprintf(csc_size_s, "%.2f KiB", csc_size / 1024);
+                        snprintf(csc_size_s, sizeof(csc_size_s), "%.2f KiB", csc_size / 1024);
                     else
-                        sprintf(csc_size_s, "%f B", csc_size);
+                        snprintf(csc_size_s, sizeof(csc_size_s), "%f B", csc_size);
 
                     if(csc_filetype) {
                         if(!strcmp(csc_filetype, "image/jpeg")) {
@@ -217,18 +217,18 @@ void bot_inline(struct bot_update *result) {
                     }
 
                     strftime(csc_date, sizeof(csc_date), "%d.%m.%Y", date);
-                    sprintf(csc_caption, "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
-                    sprintf(csc_button, "%s%d", CSC_POST_URL, csc_id);
-                    sprintf(csc_button_text, "%s %s", csc_rating_s, csc_format);
-                    sprintf(csc_button1, "%d", page);
-                    sprintf(csc_button_text1, "%sx%s %s", json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size_s);
-                    sprintf(csc_button2, "original %d", csc_id);
-                    sprintf(csc_button3, "post %d", csc_id);
+                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "%s %s", csc_rating_s, csc_format);
+                    snprintf(csc_button1, sizeof(csc_button1), "%d", page);
+                    snprintf(csc_button_text1, sizeof(csc_button_text1), "%sx%s %s", json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size_s);
+                    snprintf(csc_button2, sizeof(csc_button2), "original %d", csc_id);
+                    snprintf(csc_button3, sizeof(csc_button3), "post %d", csc_id);
 
                     if(strcmp(arguments, ""))
                         strcat(csc_button1, arguments);
                     if(strcmp(pre_query, ""))
-                        sprintf(csc_button1 + strlen(csc_button1), " %.1024s", pre_query);
+                        snprintf(csc_button1 + strlen(csc_button1), sizeof(csc_button1) - strlen(csc_button1), " %s", pre_query);
 
                     json_object *inline_keyboard = json_object_new_object();
                     json_object *inline_keyboard1 = json_object_new_array();
@@ -273,7 +273,7 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                 } if(action == 1 || action == 2) {
-                    char *csc_rating_s = "", *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, csc_sample_url[512], csc_preview_url[512], csc_caption[6144], csc_button[128], csc_button_text[16], csc_button_text1[32], csc_button1[2048], csc_button2[32], csc_button3[32];
+                    char *csc_rating_s = "", *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, csc_sample_url[512], csc_preview_url[512], csc_caption[6144], csc_button[128], csc_button_text[16], csc_button_text1[32], csc_button1[1024], csc_button2[32], csc_button3[32];
 
                     int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
                     const char *csc_date = json_object_get_string(json_object_object_get(csc_data, "created_at"));
@@ -377,19 +377,19 @@ void bot_inline(struct bot_update *result) {
                         csc_sheight = 150;
                     }
 
-                    sprintf(csc_caption, "<b>ID:</b> <code>%d</code>\n<b>Date:</b> %s\n\n<b>%s</b>", csc_id, csc_date, csc_name);
+                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> %s\n\n<b>%s</b>", csc_id, csc_date, csc_name);
                     bot_free(1, csc_name);
-                    sprintf(csc_button, "%s%d", CSC_POOL_URL, csc_id);
-                    sprintf(csc_button_text, "%s", csc_rating_s);
-                    sprintf(csc_button1, "%d", page);
-                    sprintf(csc_button_text1, "%d pages", csc_pages);
-                    sprintf(csc_button2, "1a pool:%d", csc_id);
-                    sprintf(csc_button3, "book %d", csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "%s", csc_rating_s);
+                    snprintf(csc_button1, sizeof(csc_button1), "%d", page);
+                    snprintf(csc_button_text1, sizeof(csc_button_text1), "%d pages", csc_pages);
+                    snprintf(csc_button2, sizeof(csc_button2), "1a pool:%d", csc_id);
+                    snprintf(csc_button3, sizeof(csc_button3), "book %d", csc_id);
 
                     if(strcmp(arguments, ""))
                         strcat(csc_button1, arguments);
                     if(strcmp(pre_query, ""))
-                        sprintf(csc_button1 + strlen(csc_button1), " %.1024s", pre_query);
+                        snprintf(csc_button1 + strlen(csc_button1), sizeof(csc_button1) - strlen(csc_button1), " %s", pre_query);
                     if(csc_pages == 1)
                         csc_button_text1[6] = 0;
 
@@ -428,14 +428,14 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                 } else if(action == 3) {
-                    char csc_tag[20480], csc_button[2048], csc_button1[2048];
+                    char csc_tag[20480], csc_button[1024], csc_button1[1024];
 
                     int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
                     const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
-                    bot_csc_tag(csc_tag, &csc_data, csc_id);
-                    sprintf(csc_button, "1a %.1024s", csc_name);
-                    sprintf(csc_button1, "1ba %.1024s", csc_name);
+                    bot_csc_tag(csc_tag, sizeof(csc_tag), &csc_data, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
+                    snprintf(csc_button1, sizeof(csc_button1), "1ba %s", csc_name);
 
                     json_object *input_message_content = json_object_new_object();
                     json_object *button = json_object_new_object();
@@ -492,9 +492,9 @@ void bot_inline(struct bot_update *result) {
             const char *error_code = json_object_get_string(json_object_object_get(data, "code"));
 
             if(error_code)
-                sprintf(error_description, "Error: %.128s", error_code);
+                snprintf(error_description, sizeof(error_description), "Error: %s", error_code);
             else
-                sprintf(error_description, "Unknown error");
+                snprintf(error_description, sizeof(error_description), "Unknown error");
 
             json_object *csc_result = json_object_new_object();
             json_object *input_message_content = json_object_new_object();
@@ -547,7 +547,7 @@ void bot_inline(struct bot_update *result) {
                     json_object *inline_keyboard2 = json_object_new_array();
 
                     if(csc_filetype && strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
-                        sprintf(csc_title, "Original file of post %d", csc_id);
+                        snprintf(csc_title, sizeof(csc_title), "Original file of post %d", csc_id);
 
                         json_object_object_add(csc_result, "type", json_object_new_string("document"));
                         json_object_object_add(csc_result, "id", json_object_new_int(1));
@@ -557,7 +557,7 @@ void bot_inline(struct bot_update *result) {
                         json_object_object_add(csc_result, "description", json_object_new_string("Click to send file"));
                         json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url));
                     } else {
-                        sprintf(csc_title, "Link to original file of post %d", csc_id);
+                        snprintf(csc_title, sizeof(csc_title), "Link to original file of post %d", csc_id);
 
                         json_object *input_message_content = json_object_new_object();
 
@@ -585,11 +585,11 @@ void bot_inline(struct bot_update *result) {
 
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
-                    bot_csc_post(csc_info, &csc_data, csc_id);
-                    sprintf(csc_title, "Post %d", csc_id);
-                    sprintf(csc_button, "%s%d", CSC_POST_URL, csc_id);
-                    sprintf(callback_data, "1_%d_0_0_0", csc_id);
-                    sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                    bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    snprintf(csc_title, sizeof(csc_title), "Post %d", csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(callback_data, sizeof(callback_data), "1_%d_0_0_0", csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                     json_object *input_message_content = json_object_new_object();
                     json_object *button = json_object_new_object();
@@ -620,12 +620,12 @@ void bot_inline(struct bot_update *result) {
 
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
-                    bot_csc_pool(csc_info, &csc_data, csc_id);
-                    sprintf(csc_title, "Book %d", csc_id);
-                    sprintf(csc_button, "%s%d", CSC_POOL_URL, csc_id);
-                    sprintf(callback_data, "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
-                    sprintf(callback_data1, "2_%d_0_0_0", csc_id);
-                    sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                    bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    snprintf(csc_title, sizeof(csc_title), "Book %d", csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(callback_data, sizeof(callback_data), "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
+                    snprintf(callback_data1, sizeof(callback_data1), "2_%d_0_0_0", csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                     json_object *input_message_content = json_object_new_object();
                     json_object *button = json_object_new_object();
@@ -663,13 +663,13 @@ void bot_inline(struct bot_update *result) {
 
                 if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
                     if(strcmp(query, "book"))
-                        sprintf(error_description, "Wrong post ID");
+                        snprintf(error_description, sizeof(error_description), "Wrong post ID");
                     else
-                        sprintf(error_description, "Wrong book ID");
+                        snprintf(error_description, sizeof(error_description), "Wrong book ID");
                 } else if(error_code) {
-                    sprintf(error_description, "Error: %.128s", error_code);
+                    snprintf(error_description, sizeof(error_description), "Error: %s", error_code);
                 } else {
-                    sprintf(error_description, "Unknown error");
+                    snprintf(error_description, sizeof(error_description), "Unknown error");
                 }
 
                 json_object *input_message_content = json_object_new_object();

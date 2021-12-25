@@ -26,10 +26,10 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 }
 
 json_object *bot_get(const char *method, json_object **json) {
-    char method_url[strlen(api) + strlen(method)];
+    char method_url[strlen(api) + strlen(method) + 2];
     struct bot_curl_string string = {0};
 
-    sprintf(method_url, "%s/%s", api, method);
+    snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     CURL *send_request = curl_easy_init();
@@ -59,10 +59,10 @@ json_object *bot_get(const char *method, json_object **json) {
 }
 
 int bot_post(const char *method, json_object **json) {
-    char method_url[strlen(api) + strlen(method)];
+    char method_url[strlen(api) + strlen(method) + 2];
     struct bot_curl_string string = {0};
 
-    sprintf(method_url, "%s/%s", api, method);
+    snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     CURL *send_request = curl_easy_init();
@@ -161,7 +161,7 @@ int bot_command_parse(const char *input, const char *command_text) {
 
     if(sscanf(input, "/%97s", command_from_input)) {
         if(strcmp(command_from_input, command_text)) {
-            sprintf(command, "%s@%s", command_text, bot_username);
+            snprintf(command, sizeof(command), "%s@%s", command_text, bot_username);
             if(strcmp(command_from_input, command))
                 return 1;
         }

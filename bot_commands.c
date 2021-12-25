@@ -101,10 +101,10 @@ void bot_commands(struct bot_update *result) {
                 } else if(!bot_command_parse(result->message_text, "post")) {
                     char csc_info[4096], csc_button[128], callback_data[32], csc_button_text[16];
 
-                    bot_csc_post(csc_info, &csc_data, csc_id);
-                    sprintf(csc_button, "%s%d", CSC_POST_URL, csc_id);
-                    sprintf(callback_data, "1_%d_0_0_0", csc_id);
-                    sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                    bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(callback_data, sizeof(callback_data), "1_%d_0_0_0", csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                     json_object *button = json_object_new_object();
                     json_object *button1 = json_object_new_object();
@@ -127,11 +127,11 @@ void bot_commands(struct bot_update *result) {
                 } else if(!bot_command_parse(result->message_text, "book")) {
                     char csc_info[20480], csc_button[128], callback_data[32], callback_data1[32], csc_button_text[16];
 
-                    bot_csc_pool(csc_info, &csc_data, csc_id);
-                    sprintf(csc_button, "%s%d", CSC_POOL_URL, csc_id);
-                    sprintf(callback_data, "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
-                    sprintf(callback_data1, "2_%d_0_0_0", csc_id);
-                    sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                    bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(callback_data, sizeof(callback_data), "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
+                    snprintf(callback_data1, sizeof(callback_data1), "2_%d_0_0_0", csc_id);
+                    snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                     json_object *button = json_object_new_object();
                     json_object *button1 = json_object_new_object();
@@ -163,13 +163,13 @@ void bot_commands(struct bot_update *result) {
 
                 if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
                     if(bot_command_parse(result->message_text, "book"))
-                        sprintf(error_description, "<b>Wrong post ID</b>");
+                        snprintf(error_description, sizeof(error_description), "<b>Wrong post ID</b>");
                     else
-                        sprintf(error_description, "<b>Wrong book ID</b>");
+                        snprintf(error_description, sizeof(error_description), "<b>Wrong book ID</b>");
                 } else if(error_code) {
-                    sprintf(error_description, "<b>Error:</b> %.128s", error_code);
+                    snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);
                 } else {
-                    sprintf(error_description, "<b>Unknown error</b>");
+                    snprintf(error_description, sizeof(error_description), "<b>Unknown error</b>");
                 }
 
                 json_object_object_add(info, "text", json_object_new_string(error_description));
@@ -238,13 +238,13 @@ void bot_commands(struct bot_update *result) {
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
             if(csc_id) {
-                char csc_tag[20480], csc_button[2048], csc_button1[2048];
+                char csc_tag[20480], csc_button[1024], csc_button1[1024];
 
                 const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
-                bot_csc_tag(csc_tag, &csc_data, csc_id);
-                sprintf(csc_button, "1a %.1024s", csc_name);
-                sprintf(csc_button1, "1ba %.1024s", csc_name);
+                bot_csc_tag(csc_tag, sizeof(csc_tag), &csc_data, csc_id);
+                snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
+                snprintf(csc_button1, sizeof(csc_button1), "1ba %s", csc_name);
 
                 json_object *button = json_object_new_object();
                 json_object *button1 = json_object_new_object();
@@ -274,11 +274,11 @@ void bot_commands(struct bot_update *result) {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 
                 if(error_code && !strcmp(error_code, "snackbar__server-error_not-found"))
-                    sprintf(error_description, "<b>Wrong tag ID or name</b>");
+                    snprintf(error_description, sizeof(error_description), "<b>Wrong tag ID or name</b>");
                 else if(error_code)
-                    sprintf(error_description, "<b>Error:</b> %.128s", error_code);
+                    snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);
                 else
-                    sprintf(error_description, "<b>Unknown error</b>");
+                    snprintf(error_description, sizeof(error_description), "<b>Unknown error</b>");
 
                 json_object_object_add(tag, "text", json_object_new_string(error_description));
                 json_object_object_add(tag, "parse_mode", json_object_new_string("HTML"));

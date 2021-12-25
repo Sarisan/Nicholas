@@ -50,7 +50,7 @@ void *csc_authorization() {
         return (void *)1;
     }
 
-    sprintf(csc_authorization_header, "Authorization: Bearer %s", json_object_get_string(json_object_object_get(login_json, "access_token")));
+    snprintf(csc_authorization_header, sizeof(csc_authorization_header), "Authorization: Bearer %s", json_object_get_string(json_object_object_get(login_json, "access_token")));
     printf("Sankaku Channel Authorization: authorized successfully\n");
 
     json_object_put(login_json);

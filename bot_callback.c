@@ -66,7 +66,7 @@ void bot_callback(struct bot_update *result) {
                     char tag[512];
 
                     char *tag_encoded = bot_strenc(json_object_get_string(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "name")), 64);
-                    sprintf(tag, "<code>%s</code> ", tag_encoded);
+                    snprintf(tag, sizeof(tag), "<code>%s</code> ", tag_encoded);
                     bot_free(1, tag_encoded);
 
                     switch(json_object_get_int(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "type"))) {
@@ -98,23 +98,23 @@ void bot_callback(struct bot_update *result) {
                 }
 
                 if(strcmp(csc_copyright, ""))
-                    sprintf(csc_copyright_s, "<b>Copyright:</b> %s\n", csc_copyright);
+                    snprintf(csc_copyright_s, sizeof(csc_copyright_s), "<b>Copyright:</b> %s\n", csc_copyright);
                 if(strcmp(csc_studio, ""))
-                    sprintf(csc_studio_s, "<b>Studio:</b> %s\n", csc_studio);
+                    snprintf(csc_studio_s, sizeof(csc_studio_s), "<b>Studio:</b> %s\n", csc_studio);
                 if(strcmp(csc_character, ""))
-                    sprintf(csc_character_s, "<b>Character:</b> %s\n", csc_character);
+                    snprintf(csc_character_s, sizeof(csc_character_s), "<b>Character:</b> %s\n", csc_character);
                 if(strcmp(csc_artist, ""))
-                    sprintf(csc_artist_s, "<b>Artist:</b> %s\n", csc_artist);
+                    snprintf(csc_artist_s, sizeof(csc_artist_s), "<b>Artist:</b> %s\n", csc_artist);
                 if(strcmp(csc_medium, ""))
-                    sprintf(csc_medium_s, "<b>Medium:</b> %s\n", csc_medium);
+                    snprintf(csc_medium_s, sizeof(csc_medium_s), "<b>Medium:</b> %s\n", csc_medium);
                 if(strcmp(csc_general, ""))
-                    sprintf(csc_general_s, "<b>General:</b> %s\n", csc_general);
+                    snprintf(csc_general_s, sizeof(csc_general_s), "<b>General:</b> %s\n", csc_general);
                 if(strcmp(csc_meta, ""))
-                    sprintf(csc_meta_s, "<b>Meta:</b> %s\n", csc_meta);
+                    snprintf(csc_meta_s, sizeof(csc_meta_s), "<b>Meta:</b> %s\n", csc_meta);
                 if(strcmp(csc_genre, ""))
-                    sprintf(csc_genre_s, "<b>Genre:</b> %s", csc_genre);
+                    snprintf(csc_genre_s, sizeof(csc_genre_s), "<b>Genre:</b> %s", csc_genre);
 
-                sprintf(csc_info, "%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s);
+                snprintf(csc_info, sizeof(csc_info), "%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s);
 
                 if(strcmp(csc_info, "")) {
                     char callback_data[32], callback_data1[64], callback_data2[64];
@@ -124,11 +124,11 @@ void bot_callback(struct bot_update *result) {
                     const char *inline_message_id = json_object_get_string(json_object_object_get(json_object_object_get(result->update, "callback_query"), "inline_message_id"));
 
                     if(action == 1)
-                        sprintf(callback_data, "3_%d_0_0_0", id);
+                        snprintf(callback_data, sizeof(callback_data), "3_%d_0_0_0", id);
                     else if(action == 2)
-                        sprintf(callback_data, "4_%d_0_0_0", id);
-                    sprintf(callback_data1, "%d_%d_%d_0_0", action, id, offset - 60);
-                    sprintf(callback_data2, "%d_%d_%d_0_0", action, id, tags_array);
+                        snprintf(callback_data, sizeof(callback_data), "4_%d_0_0_0", id);
+                    snprintf(callback_data1, sizeof(callback_data1), "%d_%d_%d_0_0", action, id, offset - 60);
+                    snprintf(callback_data2, sizeof(callback_data2), "%d_%d_%d_0_0", action, id, tags_array);
 
                     json_object *info = json_object_new_object();
                     json_object *button = json_object_new_object();
@@ -177,10 +177,10 @@ void bot_callback(struct bot_update *result) {
                 int message_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "callback_query"), "message"), "message_id"));
                 const char *inline_message_id = json_object_get_string(json_object_object_get(json_object_object_get(result->update, "callback_query"), "inline_message_id"));
 
-                bot_csc_post(csc_info, &csc_data, csc_id);
-                sprintf(csc_button, "%s%d", CSC_POST_URL, csc_id);
-                sprintf(callback_data, "1_%d_0_0_0", id);
-                sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                snprintf(callback_data, sizeof(callback_data), "1_%d_0_0_0", id);
+                snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                 json_object *info = json_object_new_object();
                 json_object *button = json_object_new_object();
@@ -216,11 +216,11 @@ void bot_callback(struct bot_update *result) {
                 int message_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "callback_query"), "message"), "message_id"));
                 const char *inline_message_id = json_object_get_string(json_object_object_get(json_object_object_get(result->update, "callback_query"), "inline_message_id"));
 
-                bot_csc_pool(csc_info, &csc_data, csc_id);
-                sprintf(csc_button, "%s%d", CSC_POOL_URL, csc_id);
-                sprintf(callback_data, "5_%d_0_1_%d", id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
-                sprintf(callback_data1, "2_%d_0_0_0", id);
-                sprintf(csc_button_text, "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
+                bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                snprintf(callback_data, sizeof(callback_data), "5_%d_0_1_%d", id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);
+                snprintf(callback_data1, sizeof(callback_data1), "2_%d_0_0_0", id);
+                snprintf(csc_button_text, sizeof(csc_button_text), "Tags (%zu)", json_object_array_length(json_object_object_get(csc_data, "tags")));
 
                 json_object *info = json_object_new_object();
                 json_object *button = json_object_new_object();
@@ -290,10 +290,10 @@ void bot_callback(struct bot_update *result) {
                     strcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png");
                 }
 
-                sprintf(csc_book, "<a href=\"%s\">&#8203;</a><b>Page:</b> %d / %d\n<b>ID:</b> <code>%d</code>", csc_sample_url, offset + 1, data1 + 1, csc_id);
-                sprintf(callback_data, "4_%d_0_0_0", id);
-                sprintf(callback_data1, "5_%d_%d_%d_%d", id, offset - 1, pages_array == 0 ? data - 1 : data, data1);
-                sprintf(callback_data2, "5_%d_%d_%d_%d", id, offset + 1, pages_array == 19 ? data + 1 : data, data1);
+                snprintf(csc_book, sizeof(csc_book), "<a href=\"%s\">&#8203;</a><b>Page:</b> %d / %d\n<b>ID:</b> <code>%d</code>", csc_sample_url, offset + 1, data1 + 1, csc_id);
+                snprintf(callback_data, sizeof(callback_data), "4_%d_0_0_0", id);
+                snprintf(callback_data1, sizeof(callback_data1), "5_%d_%d_%d_%d", id, offset - 1, pages_array == 0 ? data - 1 : data, data1);
+                snprintf(callback_data2, sizeof(callback_data2), "5_%d_%d_%d_%d", id, offset + 1, pages_array == 19 ? data + 1 : data, data1);
 
                 json_object *book_page = json_object_new_object();
                 json_object *button = json_object_new_object();
@@ -341,9 +341,9 @@ void bot_callback(struct bot_update *result) {
             const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 
             if(error_code)
-                sprintf(error_description, "Error: %.128s", error_code);
+                snprintf(error_description, sizeof(error_description), "Error: %s", error_code);
             else
-                sprintf(error_description, "Unknown error");
+                snprintf(error_description, sizeof(error_description), "Unknown error");
 
             json_object_object_add(csc_answer, "text", json_object_new_string(error_description));
         }
