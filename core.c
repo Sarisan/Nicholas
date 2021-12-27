@@ -93,13 +93,13 @@ int main(int argc, char **argv) {
         printf("      --login=<arg>\tYour Sankaku Channel login\n");
         printf("      --password=<arg>\tYour Sankaku Channel password\n");
         return 0;
-    } if(!api || (api && !bot_strcmp(api, ""))) {
+    } if(!api || (api && !api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
         return 1;
-    } if(!login || (login && !bot_strcmp(login, ""))) {
+    } if(!login || (login && !api[0])) {
         fprintf(stderr, "%s: Sankaku Channel login is not set\n", argv[0]);
         return 1;
-    } if(!password || (password && !bot_strcmp(password, ""))) {
+    } if(!password || (password && !password[0])) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
         return 1;
     }

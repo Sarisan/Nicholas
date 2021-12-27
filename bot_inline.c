@@ -4,15 +4,12 @@
 #include "string.h"
 
 void bot_inline(struct bot_update *result) {
-    char inline_query[1024], arguments[8], *pre_query, query[4096];
+    char inline_query[1024], arguments[8] = "", *pre_query = "", query[4096] = "";
     short page, action = 0, preview = 0, autopaging = 0;
 
     const char *inline_query_id = json_object_get_string(json_object_object_get(json_object_object_get(result->update, "inline_query"), "id"));
 
     snprintf(inline_query, sizeof(inline_query), "%s", result->inline_query);
-    bot_strncpy(arguments, "", sizeof(arguments));
-    pre_query = "";
-    bot_strncpy(query, "", sizeof(query));
 
     if(sscanf(result->inline_query, "%hd", &page) == 1) {
         char page_buffer[8], first_word[4];
@@ -225,9 +222,9 @@ void bot_inline(struct bot_update *result) {
                     snprintf(csc_button2, sizeof(csc_button2), "original %d", csc_id);
                     snprintf(csc_button3, sizeof(csc_button3), "post %d", csc_id);
 
-                    if(bot_strcmp(arguments, ""))
+                    if(arguments[0])
                         bot_strncat(csc_button1, arguments, sizeof(csc_button1) - bot_strlen(csc_button1));
-                    if(bot_strcmp(pre_query, ""))
+                    if(pre_query[0])
                         snprintf(csc_button1 + bot_strlen(csc_button1), sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
 
                     json_object *inline_keyboard = json_object_new_object();
@@ -386,9 +383,9 @@ void bot_inline(struct bot_update *result) {
                     snprintf(csc_button2, sizeof(csc_button2), "1a pool:%d", csc_id);
                     snprintf(csc_button3, sizeof(csc_button3), "book %d", csc_id);
 
-                    if(bot_strcmp(arguments, ""))
+                    if(arguments[0])
                         bot_strncat(csc_button1, arguments, sizeof(csc_button1) - bot_strlen(csc_button1));
-                    if(bot_strcmp(pre_query, ""))
+                    if(pre_query[0])
                         snprintf(csc_button1 + bot_strlen(csc_button1), sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
                     if(csc_pages == 1)
                         csc_button_text1[6] = 0;
@@ -515,14 +512,13 @@ void bot_inline(struct bot_update *result) {
 
         json_object_put(data);
     } else if(sscanf(result->inline_query, "%8s", query) == 1 && (!bot_strcmp(query, "original") || !bot_strcmp(query, "post") || !bot_strcmp(query, "book"))) {
-        char argument[16];
+        char argument[16] = "";
 
-        if(sscanf(result->inline_query, "%8s %15s", query, argument) != 2)
-            bot_strncpy(argument, "", sizeof(argument));
+        sscanf(result->inline_query, "%8s %15s", query, argument);
 
         json_object *csc_result = json_object_new_object();
 
-        if(bot_strcmp(argument, "")) {
+        if(argument[0]) {
             json_object *csc_data;
 
             if(bot_strcmp(query, "book"))
@@ -705,7 +701,7 @@ void bot_inline(struct bot_update *result) {
         json_object_object_add(input_message_content, "message_text", json_object_new_string("<b>No results found, no argument specified</b>"));
         json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
         json_object_object_add(csc_result, "input_message_content", input_message_content);
-        if(!bot_strcmp(result->inline_query, ""))
+        if(!result->inline_query[0])
             json_object_object_add(csc_result, "description", json_object_new_string("You must specify an argument"));
         else
             json_object_object_add(csc_result, "description", json_object_new_string("Invalid argument"));

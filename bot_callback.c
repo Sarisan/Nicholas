@@ -40,27 +40,10 @@ void bot_callback(struct bot_update *result) {
 
         if(csc_id) {
             if(action == 1 || action == 2) {
-                char csc_copyright[20480], csc_copyright_s[20480], csc_studio[20480], csc_studio_s[20480], csc_character[20480], csc_character_s[20480], csc_artist[20480], csc_artist_s[20480], csc_medium[20480], csc_medium_s[20480], csc_general[20480], csc_general_s[20480], csc_meta[20480], csc_meta_s[20480], csc_genre[20480], csc_genre_s[20480], csc_info[20480];
+                char csc_copyright[20480] = "", csc_copyright_s[20480] = "", csc_studio[20480] = "", csc_studio_s[20480] = "", csc_character[20480] = "", csc_character_s[20480] = "", csc_artist[20480] = "", csc_artist_s[20480] = "", csc_medium[20480] = "", csc_medium_s[20480] = "", csc_general[20480] = "", csc_general_s[20480] = "", csc_meta[20480] = "", csc_meta_s[20480] = "", csc_genre[20480] = "", csc_genre_s[20480] = "", csc_info[20480];
                 short tags_array = offset;
 
                 json_object *csc_tags_array = json_object_object_get(csc_data, "tags");
-
-                bot_strncpy(csc_copyright, "", sizeof(csc_copyright));
-                bot_strncpy(csc_copyright_s, "", sizeof(csc_copyright_s));
-                bot_strncpy(csc_studio, "", sizeof(csc_studio));
-                bot_strncpy(csc_studio_s, "", sizeof(csc_studio_s));
-                bot_strncpy(csc_character, "", sizeof(csc_character));
-                bot_strncpy(csc_character_s, "", sizeof(csc_character_s));
-                bot_strncpy(csc_artist, "", sizeof(csc_artist));
-                bot_strncpy(csc_artist_s, "", sizeof(csc_artist_s));
-                bot_strncpy(csc_medium, "", sizeof(csc_medium));
-                bot_strncpy(csc_medium_s, "", sizeof(csc_medium_s));
-                bot_strncpy(csc_general, "", sizeof(csc_general));
-                bot_strncpy(csc_general_s, "", sizeof(csc_general_s));
-                bot_strncpy(csc_meta, "", sizeof(csc_meta));
-                bot_strncpy(csc_meta_s, "", sizeof(csc_meta_s));
-                bot_strncpy(csc_genre, "", sizeof(csc_genre));
-                bot_strncpy(csc_genre_s, "", sizeof(csc_genre_s));
 
                 for(short tags_count = 0; json_object_array_get_idx(csc_tags_array, tags_array) && tags_count < 60; tags_count++, tags_array++) {
                     char tag[512];
@@ -97,26 +80,26 @@ void bot_callback(struct bot_update *result) {
                     }
                 }
 
-                if(bot_strcmp(csc_copyright, ""))
+                if(csc_copyright[0])
                     snprintf(csc_copyright_s, sizeof(csc_copyright_s), "<b>Copyright:</b> %s\n", csc_copyright);
-                if(bot_strcmp(csc_studio, ""))
+                if(csc_studio[0])
                     snprintf(csc_studio_s, sizeof(csc_studio_s), "<b>Studio:</b> %s\n", csc_studio);
-                if(bot_strcmp(csc_character, ""))
+                if(csc_character[0])
                     snprintf(csc_character_s, sizeof(csc_character_s), "<b>Character:</b> %s\n", csc_character);
-                if(bot_strcmp(csc_artist, ""))
+                if(csc_artist[0])
                     snprintf(csc_artist_s, sizeof(csc_artist_s), "<b>Artist:</b> %s\n", csc_artist);
-                if(bot_strcmp(csc_medium, ""))
+                if(csc_medium[0])
                     snprintf(csc_medium_s, sizeof(csc_medium_s), "<b>Medium:</b> %s\n", csc_medium);
-                if(bot_strcmp(csc_general, ""))
+                if(csc_general[0])
                     snprintf(csc_general_s, sizeof(csc_general_s), "<b>General:</b> %s\n", csc_general);
-                if(bot_strcmp(csc_meta, ""))
+                if(csc_meta[0])
                     snprintf(csc_meta_s, sizeof(csc_meta_s), "<b>Meta:</b> %s\n", csc_meta);
-                if(bot_strcmp(csc_genre, ""))
+                if(csc_genre[0])
                     snprintf(csc_genre_s, sizeof(csc_genre_s), "<b>Genre:</b> %s", csc_genre);
 
                 snprintf(csc_info, sizeof(csc_info), "%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s);
 
-                if(bot_strcmp(csc_info, "")) {
+                if(csc_info[0]) {
                     char callback_data[32], callback_data1[64], callback_data2[64];
 
                     const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "callback_query"), "message"), "chat"), "id"));

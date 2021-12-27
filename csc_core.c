@@ -42,7 +42,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 }
 
 void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc_id) {
-    char *csc_rating_s = "", csc_size_s[16], *csc_format, csc_sample_url[512], *csc_has_children_s, csc_parent_id_s[32], csc_source_s[1024], csc_date[16], csc_time[16];
+    char *csc_rating_s = "", csc_size_s[16] = "", *csc_format, csc_sample_url[512], *csc_has_children_s, csc_parent_id_s[32], csc_source_s[1024], csc_date[16], csc_time[16];
 
     const char *csc_rating = json_object_get_string(json_object_object_get(*csc_data, "rating"));
     char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(*csc_data, "author"), "name")), 256);
@@ -68,8 +68,6 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
         snprintf(csc_size_s, sizeof(csc_size_s), "(%.2f MiB)", csc_size / 1048576);
     else if(csc_size > 1024)
         snprintf(csc_size_s, sizeof(csc_size_s), "(%.2f KiB)", csc_size / 1024);
-    else
-        bot_strncpy(csc_size_s, "", sizeof(csc_size_s));
                 
     if(csc_filetype) {
         if(!bot_strcmp(csc_filetype, "image/jpeg")) {
@@ -116,7 +114,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
         csc_vote_average = 0;
 
     if(csc_source) {
-        if(bot_strcmp(csc_source, ""))
+        if(csc_source[0])
             snprintf(csc_source_s, sizeof(csc_source_s), "%s", csc_source);
         else
             bot_strncpy(csc_source_s, "none", sizeof(csc_source_s));
@@ -143,7 +141,7 @@ void bot_csc_pool(char *csc_info, size_t length, json_object **csc_data, int csc
     const char *csc_filetype = json_object_get_string(json_object_object_get(cover_post, "file_type"));
     char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(*csc_data, "name")), 1024);
 
-    if(bot_strcmp(csc_description, "")) {
+    if(csc_description[0]) {
         char *csc_description_encoded = bot_strenc(csc_description, 2048);
         snprintf(csc_description_s, sizeof(csc_description_s), "<code>%s</code>", csc_description_encoded);
         bot_free(1, csc_description_encoded);
