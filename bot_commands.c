@@ -1,7 +1,7 @@
 #include "core.h"
 #include "csc_core.h"
 #include <curl/curl.h>
-#include <string.h>
+#include "string.h"
 
 void bot_commands(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "start") || !bot_command_parse(result->message_text, "help")) {
@@ -38,7 +38,7 @@ void bot_commands(struct bot_update *result) {
         bot_post("sendMessage", &info);
         json_object_put(info);
     } else if(!bot_command_parse(result->message_text, "original") || !bot_command_parse(result->message_text, "post") || !bot_command_parse(result->message_text, "book")) {
-        char placeholder[97], argument[16];
+        char placeholder[128], argument[16];
 
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
@@ -46,20 +46,20 @@ void bot_commands(struct bot_update *result) {
         if(!reply_id)
             reply_id = message_id;
 
-        if(sscanf(result->message_text, "/%97s %16s", placeholder, argument) != 2) {
+        if(sscanf(result->message_text, "/%97s %15s", placeholder, argument) != 2) {
             json_object *reply_to_message = json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message");
             if((json_object_get_string(json_object_object_get(reply_to_message, "caption"))
               && !sscanf(json_object_get_string(json_object_object_get(reply_to_message, "caption")), "ID: %16s", argument))
               || !json_object_get_boolean(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "is_bot"))
-              || strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username))
-                strcpy(argument, "");
+              || bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username))
+                bot_strncpy(argument, "", sizeof(argument));
         }
 
         json_object *info = json_object_new_object();
 
         json_object_object_add(info, "chat_id", json_object_new_string(chat_id));
 
-        if(strcmp(argument, "")) {
+        if(bot_strcmp(argument, "")) {
             json_object *csc_data;
 
             if(bot_command_parse(result->message_text, "book"))
@@ -80,7 +80,7 @@ void bot_commands(struct bot_update *result) {
                     json_object *inline_keyboard1 = json_object_new_array();
                     json_object *inline_keyboard2 = json_object_new_array();
 
-                    if(csc_filetype && strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
+                    if(csc_filetype && bot_strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
                         json_object_object_add(info, "document", json_object_new_string(document));
                         json_object_object_add(info, "reply_to_message_id", json_object_new_int(reply_id));
                     } else {
@@ -161,7 +161,7 @@ void bot_commands(struct bot_update *result) {
 
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 
-                if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
+                if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found")) {
                     if(bot_command_parse(result->message_text, "book"))
                         snprintf(error_description, sizeof(error_description), "<b>Wrong post ID</b>");
                     else
@@ -213,7 +213,7 @@ void bot_commands(struct bot_update *result) {
 
         json_object_put(info);
     } else if(!bot_command_parse(result->message_text, "tag")) {
-        char placeholder[97], argument[1024];
+        char placeholder[128], argument[1024];
 
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
@@ -221,14 +221,14 @@ void bot_commands(struct bot_update *result) {
         if(!reply_id)
             reply_id = message_id;
 
-        if(sscanf(result->message_text, "/%97s %1024s", placeholder, argument) != 2)
-            strcpy(argument, "");
+        if(sscanf(result->message_text, "/%97s %1023s", placeholder, argument) != 2)
+            bot_strncpy(argument, "", sizeof(argument));
 
         json_object *tag = json_object_new_object();
 
         json_object_object_add(tag, "chat_id", json_object_new_string(chat_id));
 
-        if(strcmp(argument, "")) {
+        if(bot_strcmp(argument, "")) {
             CURL *encode_argument = curl_easy_init();
             char *encoded_argument = curl_easy_escape(encode_argument, argument, 0);
             json_object *csc_data = csc_request(0, "tags/%s/", encoded_argument);
@@ -273,7 +273,7 @@ void bot_commands(struct bot_update *result) {
 
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 
-                if(error_code && !strcmp(error_code, "snackbar__server-error_not-found"))
+                if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found"))
                     snprintf(error_description, sizeof(error_description), "<b>Wrong tag ID or name</b>");
                 else if(error_code)
                     snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);

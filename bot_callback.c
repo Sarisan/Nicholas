@@ -1,7 +1,7 @@
 #include "core.h"
 #include "csc_core.h"
 #include <stdio.h>
-#include <string.h>
+#include "string.h"
 
 void bot_callback(struct bot_update *result) {
     short action;
@@ -45,22 +45,22 @@ void bot_callback(struct bot_update *result) {
 
                 json_object *csc_tags_array = json_object_object_get(csc_data, "tags");
 
-                strcpy(csc_copyright, "");
-                strcpy(csc_copyright_s, "");
-                strcpy(csc_studio, "");
-                strcpy(csc_studio_s, "");
-                strcpy(csc_character, "");
-                strcpy(csc_character_s, "");
-                strcpy(csc_artist, "");
-                strcpy(csc_artist_s, "");
-                strcpy(csc_medium, "");
-                strcpy(csc_medium_s, "");
-                strcpy(csc_general, "");
-                strcpy(csc_general_s, "");
-                strcpy(csc_meta, "");
-                strcpy(csc_meta_s, "");
-                strcpy(csc_genre, "");
-                strcpy(csc_genre_s, "");
+                bot_strncpy(csc_copyright, "", sizeof(csc_copyright));
+                bot_strncpy(csc_copyright_s, "", sizeof(csc_copyright_s));
+                bot_strncpy(csc_studio, "", sizeof(csc_studio));
+                bot_strncpy(csc_studio_s, "", sizeof(csc_studio_s));
+                bot_strncpy(csc_character, "", sizeof(csc_character));
+                bot_strncpy(csc_character_s, "", sizeof(csc_character_s));
+                bot_strncpy(csc_artist, "", sizeof(csc_artist));
+                bot_strncpy(csc_artist_s, "", sizeof(csc_artist_s));
+                bot_strncpy(csc_medium, "", sizeof(csc_medium));
+                bot_strncpy(csc_medium_s, "", sizeof(csc_medium_s));
+                bot_strncpy(csc_general, "", sizeof(csc_general));
+                bot_strncpy(csc_general_s, "", sizeof(csc_general_s));
+                bot_strncpy(csc_meta, "", sizeof(csc_meta));
+                bot_strncpy(csc_meta_s, "", sizeof(csc_meta_s));
+                bot_strncpy(csc_genre, "", sizeof(csc_genre));
+                bot_strncpy(csc_genre_s, "", sizeof(csc_genre_s));
 
                 for(short tags_count = 0; json_object_array_get_idx(csc_tags_array, tags_array) && tags_count < 60; tags_count++, tags_array++) {
                     char tag[512];
@@ -71,52 +71,52 @@ void bot_callback(struct bot_update *result) {
 
                     switch(json_object_get_int(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "type"))) {
                         case 3:
-                            strcat(csc_copyright, tag);
+                            bot_strncat(csc_copyright, tag, sizeof(csc_copyright) - bot_strlen(csc_copyright));
                             break;
                         case 2:
-                            strcat(csc_studio, tag);
+                            bot_strncat(csc_studio, tag, sizeof(csc_studio) - bot_strlen(csc_studio));
                             break;
                         case 4:
-                            strcat(csc_character, tag);
+                            bot_strncat(csc_character, tag, sizeof(csc_character) - bot_strlen(csc_character));
                             break;
                         case 1:
-                            strcat(csc_artist, tag);
+                            bot_strncat(csc_artist, tag, sizeof(csc_artist) - bot_strlen(csc_artist));
                             break;
                         case 8:
-                            strcat(csc_medium, tag);
+                            bot_strncat(csc_medium, tag, sizeof(csc_medium) - bot_strlen(csc_medium));
                             break;
                         case 0:
-                            strcat(csc_general, tag);
+                            bot_strncat(csc_general, tag, sizeof(csc_general) - bot_strlen(csc_general));
                             break;
                         case 9:
-                            strcat(csc_meta, tag);
+                            bot_strncat(csc_meta, tag, sizeof(csc_meta) - bot_strlen(csc_meta));
                             break;
                         case 5:
-                            strcat(csc_genre, tag);
+                            bot_strncat(csc_genre, tag, sizeof(csc_genre) - bot_strlen(csc_genre));
                             break;
                     }
                 }
 
-                if(strcmp(csc_copyright, ""))
+                if(bot_strcmp(csc_copyright, ""))
                     snprintf(csc_copyright_s, sizeof(csc_copyright_s), "<b>Copyright:</b> %s\n", csc_copyright);
-                if(strcmp(csc_studio, ""))
+                if(bot_strcmp(csc_studio, ""))
                     snprintf(csc_studio_s, sizeof(csc_studio_s), "<b>Studio:</b> %s\n", csc_studio);
-                if(strcmp(csc_character, ""))
+                if(bot_strcmp(csc_character, ""))
                     snprintf(csc_character_s, sizeof(csc_character_s), "<b>Character:</b> %s\n", csc_character);
-                if(strcmp(csc_artist, ""))
+                if(bot_strcmp(csc_artist, ""))
                     snprintf(csc_artist_s, sizeof(csc_artist_s), "<b>Artist:</b> %s\n", csc_artist);
-                if(strcmp(csc_medium, ""))
+                if(bot_strcmp(csc_medium, ""))
                     snprintf(csc_medium_s, sizeof(csc_medium_s), "<b>Medium:</b> %s\n", csc_medium);
-                if(strcmp(csc_general, ""))
+                if(bot_strcmp(csc_general, ""))
                     snprintf(csc_general_s, sizeof(csc_general_s), "<b>General:</b> %s\n", csc_general);
-                if(strcmp(csc_meta, ""))
+                if(bot_strcmp(csc_meta, ""))
                     snprintf(csc_meta_s, sizeof(csc_meta_s), "<b>Meta:</b> %s\n", csc_meta);
-                if(strcmp(csc_genre, ""))
+                if(bot_strcmp(csc_genre, ""))
                     snprintf(csc_genre_s, sizeof(csc_genre_s), "<b>Genre:</b> %s", csc_genre);
 
                 snprintf(csc_info, sizeof(csc_info), "%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s);
 
-                if(strcmp(csc_info, "")) {
+                if(bot_strcmp(csc_info, "")) {
                     char callback_data[32], callback_data1[64], callback_data2[64];
 
                     const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "callback_query"), "message"), "chat"), "id"));
@@ -267,27 +267,27 @@ void bot_callback(struct bot_update *result) {
                 const char *csc_filetype = json_object_get_string(json_object_object_get(csc_page, "file_type"));
 
                 if(csc_filetype) {
-                    if(!strcmp(csc_filetype, "image/jpeg")) {
-                        strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")));
-                    } else if(!strcmp(csc_filetype, "image/png")) {
-                        strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")));
-                    } else if(!strcmp(csc_filetype, "image/gif")) {
+                    if(!bot_strcmp(csc_filetype, "image/jpeg")) {
+                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                    } else if(!bot_strcmp(csc_filetype, "image/png")) {
+                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                    } else if(!bot_strcmp(csc_filetype, "image/gif")) {
                         if(csc_size <= 20971520)
-                            strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")));
+                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
                         else
-                            strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")));
-                    } else if(!strcmp(csc_filetype, "video/mp4")) {
+                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                    } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
                         if(csc_size <= 20971520)
-                            strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")));
+                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
                         else
-                            strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")));
-                    } else if(!strcmp(csc_filetype, "video/webm")) {
-                        strcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")));
+                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                    } else if(!bot_strcmp(csc_filetype, "video/webm")) {
+                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
                     } else {
-                        strcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png");
+                        bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                     }
                 } else {
-                    strcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png");
+                    bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                 }
 
                 snprintf(csc_book, sizeof(csc_book), "<a href=\"%s\">&#8203;</a><b>Page:</b> %d / %d\n<b>ID:</b> <code>%d</code>", csc_sample_url, offset + 1, data1 + 1, csc_id);

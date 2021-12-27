@@ -2,8 +2,7 @@
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
 #include <pthread.h>
-#include <stdlib.h>
-#include <string.h>
+#include "string.h"
 
 char csc_authorization_header[512];
 
@@ -35,7 +34,7 @@ void *csc_authorization() {
 
     if(string.string) {
         login_json = json_tokener_parse(string.string);
-        free(string.string);
+        bot_free(1, string.string);
     }
 
     if(!json_object_get_boolean(json_object_object_get(login_json, "success"))) {

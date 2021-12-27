@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
-#include <string.h>
+#include "string.h"
 
 struct bot_curl_string {
     char *string;
@@ -9,16 +9,16 @@ struct bot_curl_string {
 };
 
 extern char *api;
-char bot_username[32];
+char bot_username[64];
 
 size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_curl_string *string) {
     size_t realsize = size * nmemb;
 
     string->string = realloc(string->string, string->length + realsize + 1);
-    if(string->string == 0)
+    if(!string->string)
         return 0;
 
-    memcpy(string->string + string->length, data, realsize);
+    bot_memcpy(string->string + string->length, data, realsize);
     string->length += realsize;
     string->string[string->length] = 0;
     
@@ -26,7 +26,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 }
 
 json_object *bot_get(const char *method, json_object **json) {
-    char method_url[strlen(api) + strlen(method) + 2];
+    char method_url[bot_strlen(api) + bot_strlen(method) + 2];
     struct bot_curl_string string = {0};
 
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
@@ -59,7 +59,7 @@ json_object *bot_get(const char *method, json_object **json) {
 }
 
 int bot_post(const char *method, json_object **json) {
-    char method_url[strlen(api) + strlen(method) + 2];
+    char method_url[bot_strlen(api) + bot_strlen(method) + 2];
     struct bot_curl_string string = {0};
 
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
@@ -116,7 +116,7 @@ int bot_get_username() {
             return 1;
         }
 
-        strcpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")));
+        bot_strncpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
         printf("Bot: @%s\n", bot_username);
     } else {
         fprintf(stderr, "Bot: unable to get username\n");
@@ -157,12 +157,12 @@ json_object *bot_get_update(int offset) {
 }
 
 int bot_command_parse(const char *input, const char *command_text) {
-    char command_from_input[97], command[97];
+    char command_from_input[128], command[128];
 
     if(sscanf(input, "/%97s", command_from_input)) {
-        if(strcmp(command_from_input, command_text)) {
+        if(bot_strcmp(command_from_input, command_text)) {
             snprintf(command, sizeof(command), "%s@%s", command_text, bot_username);
-            if(strcmp(command_from_input, command))
+            if(bot_strcmp(command_from_input, command))
                 return 1;
         }
     } else {
@@ -170,40 +170,4 @@ int bot_command_parse(const char *input, const char *command_text) {
     }
 
     return 0;
-}
-
-char *bot_strenc(const char *input_string, size_t max_length) {
-    size_t length = max_length ? max_length : strlen(input_string);
-    char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
-    if(output_string == 0)
-        return 0;
-
-    size_t string_size = 0;
-
-    for(short c = 0; input_string[c] && c < length; c++) {
-        if(input_string[c] == '<') {
-            memcpy(output_string + string_size, "&#60;", 5);
-            string_size += 5;
-        } else if(input_string[c] == '>') {
-            memcpy(output_string + string_size, "&#62;", 5);
-            string_size += 5;
-        } else {
-            memcpy(output_string + string_size, &input_string[c], 1);
-            string_size += 1;
-        }
-    }
-
-    output_string[string_size] = 0;
-
-    return output_string;
-}
-
-void bot_free(size_t number, ...) {
-    va_list args;
-    va_start(args, number);
-
-    for(size_t n = 0; n < number; n++)
-        free(va_arg(args, void *));
-
-    va_end(args);
 }

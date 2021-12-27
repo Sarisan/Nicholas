@@ -8,7 +8,7 @@ struct bot_curl_string {
     size_t length;
 };
 
-extern char bot_username[32];
+extern char bot_username[64];
 
 struct bot_update {
     json_object *update;
@@ -29,7 +29,3 @@ int bot_get_username();
 json_object *bot_get_update(int offset);
 
 int bot_command_parse(const char *input, const char *command_text);
-
-char *bot_strenc(const char *input_string, size_t max_length);
-
-void bot_free(size_t number, ...);

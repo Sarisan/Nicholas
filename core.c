@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <signal.h>
-#include <string.h>
+#include "string.h"
 
 char *api, *admin, *login, *password;
 int global_signal;
@@ -36,7 +36,7 @@ void *bot_parse(void *data) {
     if(result.callback_data)
         bot_callback(&result);
 
-    if(result.message_text && admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
+    if(result.message_text && admin && !bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
         bot_commands_private(&result);
 
     json_object_put(result.update);
@@ -93,13 +93,13 @@ int main(int argc, char **argv) {
         printf("      --login=<arg>\tYour Sankaku Channel login\n");
         printf("      --password=<arg>\tYour Sankaku Channel password\n");
         return 0;
-    } if(!api || (api && !strcmp(api, ""))) {
+    } if(!api || (api && !bot_strcmp(api, ""))) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
         return 1;
-    } if(!login || (login && !strcmp(login, ""))) {
+    } if(!login || (login && !bot_strcmp(login, ""))) {
         fprintf(stderr, "%s: Sankaku Channel login is not set\n", argv[0]);
         return 1;
-    } if(!password || (password && !strcmp(password, ""))) {
+    } if(!password || (password && !bot_strcmp(password, ""))) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
         return 1;
     }
