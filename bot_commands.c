@@ -35,7 +35,7 @@ void bot_commands(struct bot_update *result) {
         json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
         json_object_object_add(info, "reply_markup", inline_keyboard);
 
-        bot_post("sendMessage", &info);
+        bot_post("sendMessage", info);
         json_object_put(info);
     } else if(!bot_command_parse(result->message_text, "original") || !bot_command_parse(result->message_text, "post") || !bot_command_parse(result->message_text, "book")) {
         char placeholder[128], argument[16] = "";
@@ -100,7 +100,7 @@ void bot_commands(struct bot_update *result) {
                     json_object_object_add(info, "reply_markup", inline_keyboard);
                 } else if(!bot_command_parse(result->message_text, "post")) {
                     char csc_info[4096];
-                    bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    bot_csc_post(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                     char csc_button[128];
                     snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POST_URL, csc_id);
@@ -131,7 +131,7 @@ void bot_commands(struct bot_update *result) {
                     json_object_object_add(info, "reply_markup", inline_keyboard);
                 } else if(!bot_command_parse(result->message_text, "book")) {
                     char csc_info[20480];
-                    bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    bot_csc_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                     char csc_button[128];
                     snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POOL_URL, csc_id);
@@ -198,7 +198,7 @@ void bot_commands(struct bot_update *result) {
         const char *document = json_object_get_string(json_object_object_get(info, "document"));
 
         if(document) {
-            if(bot_post("sendDocument", &info)) {
+            if(bot_post("sendDocument", info)) {
                 json_object *error = json_object_new_object();
                 json_object *button = json_object_new_object();
                 json_object *inline_keyboard = json_object_new_object();
@@ -216,11 +216,11 @@ void bot_commands(struct bot_update *result) {
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(error, "reply_markup", inline_keyboard);
 
-                bot_post("sendMessage", &error);
+                bot_post("sendMessage", error);
                 json_object_put(error);
             }
         } else {
-            bot_post("sendMessage", &info);
+            bot_post("sendMessage", info);
         }
 
         json_object_put(info);
@@ -250,7 +250,7 @@ void bot_commands(struct bot_update *result) {
                 const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
                 char csc_tag[20480];
-                bot_csc_tag(csc_tag, sizeof(csc_tag), &csc_data, csc_id);
+                bot_csc_tag(csc_tag, sizeof(csc_tag), csc_data, csc_id);
 
                 char csc_button[1024];
                 snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
@@ -307,7 +307,7 @@ void bot_commands(struct bot_update *result) {
             json_object_object_add(tag, "reply_to_message_id", json_object_new_int(message_id));
         }
 
-        bot_post("sendMessage", &tag);
+        bot_post("sendMessage", tag);
         json_object_put(tag);
     }
 }

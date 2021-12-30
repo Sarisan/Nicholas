@@ -42,17 +42,17 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     return data;
 }
 
-void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc_id) {
-    const char *csc_rating = json_object_get_string(json_object_object_get(*csc_data, "rating"));
-    char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(*csc_data, "author"), "name")), 256);
-    float csc_size = json_object_get_int(json_object_object_get(*csc_data, "file_size"));
-    const char *csc_filetype = json_object_get_string(json_object_object_get(*csc_data, "file_type"));
-    time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(*csc_data, "created_at"), "s"));
+void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_id) {
+    const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
+    char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(csc_data, "author"), "name")), 256);
+    float csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
+    const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
+    time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(csc_data, "created_at"), "s"));
     struct tm *date = localtime(&rawtime);
-    const char *csc_parent_id = json_object_get_string(json_object_object_get(*csc_data, "parent_id"));
-    float csc_vote_count = json_object_get_int(json_object_object_get(*csc_data, "vote_count"));
-    float csc_vote_average = json_object_get_int(json_object_object_get(*csc_data, "total_score")) / csc_vote_count;
-    const char *csc_source = json_object_get_string(json_object_object_get(*csc_data, "source"));
+    const char *csc_parent_id = json_object_get_string(json_object_object_get(csc_data, "parent_id"));
+    float csc_vote_count = json_object_get_int(json_object_object_get(csc_data, "vote_count"));
+    float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
+    const char *csc_source = json_object_get_string(json_object_object_get(csc_data, "source"));
 
     char *csc_rating_s = "";
     
@@ -77,25 +77,25 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
     if(csc_filetype) {
         if(!bot_strcmp(csc_filetype, "image/jpeg")) {
             csc_format = "JPEG";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "sample_url")), sizeof(csc_sample_url));
+            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
         } else if(!bot_strcmp(csc_filetype, "image/png")) {
             csc_format = "PNG";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "sample_url")), sizeof(csc_sample_url));
+            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
         } else if(!bot_strcmp(csc_filetype, "image/gif")) {
             csc_format = "GIF";
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "file_url")), sizeof(csc_sample_url));
+                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "preview_url")), sizeof(csc_sample_url));
+                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
         } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
             csc_format = "MP4";
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "file_url")), sizeof(csc_sample_url));
+                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "preview_url")), sizeof(csc_sample_url));
+                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
         } else if(!bot_strcmp(csc_filetype, "video/webm")) {
             csc_format = "WEBM";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "preview_url")), sizeof(csc_sample_url));
+            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
         } else {
             csc_format = "unknown";
             bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
@@ -107,7 +107,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
 
     char *csc_has_children_s;
 
-    if(json_object_get_boolean(json_object_object_get(*csc_data, "has_children")))
+    if(json_object_get_boolean(json_object_object_get(csc_data, "has_children")))
         csc_has_children_s = "yes";
     else
         csc_has_children_s = "no";
@@ -139,20 +139,20 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
     char  csc_time[16];
     strftime(csc_time, sizeof(csc_time), "%T %Z", date);
 
-    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> <code>%s</code> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_sample_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(*csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(*csc_data, "sample_width")), json_object_get_string(json_object_object_get(*csc_data, "sample_height")), json_object_get_string(json_object_object_get(*csc_data, "width")), json_object_get_string(json_object_object_get(*csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_time, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(*csc_data, "md5")), json_object_get_int(json_object_object_get(*csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
+    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> <code>%s</code> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_sample_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(csc_data, "sample_width")), json_object_get_string(json_object_object_get(csc_data, "sample_height")), json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_time, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(csc_data, "md5")), json_object_get_int(json_object_object_get(csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
     bot_free(1, csc_author);
 }
 
-void bot_csc_pool(char *csc_info, size_t length, json_object **csc_data, int csc_id) {
-    const char *csc_description = json_object_get_string(json_object_object_get(*csc_data, "description"));
-    char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(*csc_data, "author"), "name")), 256);
-    const char *csc_rating = json_object_get_string(json_object_object_get(*csc_data, "rating"));
-    float csc_vote_count = json_object_get_int(json_object_object_get(*csc_data, "vote_count"));
-    float csc_vote_average = json_object_get_int(json_object_object_get(*csc_data, "total_score")) / csc_vote_count;
-    json_object *cover_post = json_object_object_get(*csc_data, "cover_post");
+void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_id) {
+    const char *csc_description = json_object_get_string(json_object_object_get(csc_data, "description"));
+    char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(csc_data, "author"), "name")), 256);
+    const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
+    float csc_vote_count = json_object_get_int(json_object_object_get(csc_data, "vote_count"));
+    float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
+    json_object *cover_post = json_object_object_get(csc_data, "cover_post");
     float csc_size = json_object_get_int(json_object_object_get(cover_post, "file_size"));
     const char *csc_filetype = json_object_get_string(json_object_object_get(cover_post, "file_type"));
-    char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(*csc_data, "name")), 1024);
+    char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(csc_data, "name")), 1024);
 
     char csc_description_s[11264];
 
@@ -202,15 +202,15 @@ void bot_csc_pool(char *csc_info, size_t length, json_object **csc_data, int csc
     if(csc_vote_average != (float)csc_vote_average)
         csc_vote_average = 0;
 
-    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Description:</b> %s\n<b>Date:</b> %s\n<b>Author:</b> %s\n<b>Pages:</b> %d\n<b>Rating:</b> %s\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Cover post ID:</b> <code>%d</code>\n<b>Name:</b> <code>%s</code>", csc_sample_url, csc_id, csc_description_s, json_object_get_string(json_object_object_get(*csc_data, "created_at")), csc_author, json_object_get_int(json_object_object_get(*csc_data, "visible_post_count")), csc_rating_s, csc_vote_count, csc_vote_average, json_object_get_int(json_object_object_get(cover_post, "id")), csc_name);
+    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Description:</b> %s\n<b>Date:</b> %s\n<b>Author:</b> %s\n<b>Pages:</b> %d\n<b>Rating:</b> %s\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Cover post ID:</b> <code>%d</code>\n<b>Name:</b> <code>%s</code>", csc_sample_url, csc_id, csc_description_s, json_object_get_string(json_object_object_get(csc_data, "created_at")), csc_author, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")), csc_rating_s, csc_vote_count, csc_vote_average, json_object_get_int(json_object_object_get(cover_post, "id")), csc_name);
     bot_free(2, csc_author, csc_name);
 }
 
-void bot_csc_tag(char *csc_tag, size_t length, json_object **csc_data, int csc_id) {
-    const char *csc_name_en = json_object_get_string(json_object_object_get(*csc_data, "name_en"));
-    const char *csc_name_ja = json_object_get_string(json_object_object_get(*csc_data, "name_ja"));
-    char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(*csc_data, "name")), 1024);
-    const char *csc_rating = json_object_get_string(json_object_object_get(*csc_data, "rating"));
+void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id) {
+    const char *csc_name_en = json_object_get_string(json_object_object_get(csc_data, "name_en"));
+    const char *csc_name_ja = json_object_get_string(json_object_object_get(csc_data, "name_ja"));
+    char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(csc_data, "name")), 1024);
+    const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
 
     char csc_name_en_s[6144];
     
@@ -247,7 +247,7 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object **csc_data, int csc_i
 
     char *csc_type_s;
 
-    switch(json_object_get_int(json_object_object_get(*csc_data, "type"))) {
+    switch(json_object_get_int(json_object_object_get(csc_data, "type"))) {
         case 0:
             csc_type_s = "general";
             break;
@@ -277,6 +277,6 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object **csc_data, int csc_i
             break;
     }
 
-    snprintf(csc_tag, length, "<b>ID:</b> <code>%d</code>\n<b>Eng name:</b> %s\n<b>Jap name:</b> %s\n<b>Type:</b> %s\n<b>Post count:</b> %d\n<b>Book count:</b> %d\n<b>Rating:</b> %s\n<b>Name:</b> <code>%s</code>", csc_id, csc_name_en_s, csc_name_ja_s, csc_type_s, json_object_get_int(json_object_object_get(*csc_data, "post_count")), json_object_get_int(json_object_object_get(*csc_data, "pool_count")), csc_rating_s, csc_name);
+    snprintf(csc_tag, length, "<b>ID:</b> <code>%d</code>\n<b>Eng name:</b> %s\n<b>Jap name:</b> %s\n<b>Type:</b> %s\n<b>Post count:</b> %d\n<b>Book count:</b> %d\n<b>Rating:</b> %s\n<b>Name:</b> <code>%s</code>", csc_id, csc_name_en_s, csc_name_ja_s, csc_type_s, json_object_get_int(json_object_object_get(csc_data, "post_count")), json_object_get_int(json_object_object_get(csc_data, "pool_count")), csc_rating_s, csc_name);
     bot_free(1, csc_name);
 }

@@ -449,7 +449,7 @@ void bot_inline(struct bot_update *result) {
                     const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
                     char csc_tag[20480];
-                    bot_csc_tag(csc_tag, sizeof(csc_tag), &csc_data, csc_id);
+                    bot_csc_tag(csc_tag, sizeof(csc_tag), csc_data, csc_id);
 
                     char csc_button[1024];
                     snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
@@ -602,7 +602,7 @@ void bot_inline(struct bot_update *result) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
                     char csc_info[4096];
-                    bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    bot_csc_post(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                     char csc_title[32];
                     snprintf(csc_title, sizeof(csc_title), "Post %d", csc_id);
@@ -644,7 +644,7 @@ void bot_inline(struct bot_update *result) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
                     char csc_info[20480];
-                    bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                    bot_csc_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                     char csc_title[32];
                     snprintf(csc_title, sizeof(csc_title), "Book %d", csc_id);
@@ -749,6 +749,6 @@ void bot_inline(struct bot_update *result) {
 
     json_object_object_add(csc_answer, "cache_time", json_object_new_int(0));
 
-    bot_post("answerInlineQuery", &csc_answer);
+    bot_post("answerInlineQuery", csc_answer);
     json_object_put(csc_answer);
 }

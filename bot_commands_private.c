@@ -18,7 +18,7 @@ void bot_commands_private(struct bot_update *result) {
         json_object_object_add(cscauth, "parse_mode", json_object_new_string("HTML"));
         json_object_object_add(cscauth, "reply_to_message_id", json_object_new_int(reply_id));
 
-        bot_post("sendMessage", &cscauth);
+        bot_post("sendMessage", cscauth);
         json_object_put(cscauth);
     }
 }

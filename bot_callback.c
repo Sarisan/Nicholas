@@ -159,14 +159,14 @@ void bot_callback(struct bot_update *result) {
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                    bot_post("editMessageText", &info);
+                    bot_post("editMessageText", info);
                     json_object_put(info);
                 } else {
                     json_object_object_add(csc_answer, "text", json_object_new_string("No tags found"));
                 }
             } else if(action == 3) {
                 char csc_info[4096];
-                bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                bot_csc_post(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                 char csc_button[128];
                 snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POST_URL, csc_id);
@@ -206,11 +206,11 @@ void bot_callback(struct bot_update *result) {
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                bot_post("editMessageText", &info);
+                bot_post("editMessageText", info);
                 json_object_put(info);
             } else if(action == 4) {
                 char csc_info[20480];
-                bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
+                bot_csc_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
 
                 char csc_button[128];
                 snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POOL_URL, csc_id);
@@ -257,7 +257,7 @@ void bot_callback(struct bot_update *result) {
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                bot_post("editMessageText", &info);
+                bot_post("editMessageText", info);
                 json_object_put(info);
             } else if(action == 5) {
                 short pages_array = data > 1 ? offset - 20 * (data - 1) : offset;
@@ -343,7 +343,7 @@ void bot_callback(struct bot_update *result) {
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(book_page, "reply_markup", inline_keyboard);
 
-                bot_post("editMessageText", &book_page);
+                bot_post("editMessageText", book_page);
                 json_object_put(book_page);
             } else {
                 json_object_object_add(csc_answer, "text", json_object_new_string("Invalid action"));
@@ -365,6 +365,6 @@ void bot_callback(struct bot_update *result) {
         json_object_object_add(csc_answer, "text", json_object_new_string("Invalid callback data"));
     }
 
-    bot_post("answerCallbackQuery", &csc_answer);
+    bot_post("answerCallbackQuery", csc_answer);
     json_object_put(csc_answer);
 }

@@ -25,7 +25,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
     return realsize;
 }
 
-json_object *bot_get(const char *method, json_object **json) {
+json_object *bot_get(const char *method, json_object *json) {
     char method_url[bot_strlen(api) + bot_strlen(method) + 2];
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
@@ -35,7 +35,7 @@ json_object *bot_get(const char *method, json_object **json) {
 
     curl_easy_setopt(send_request, CURLOPT_URL, method_url);
     if(json) {
-        curl_easy_setopt(send_request, CURLOPT_POSTFIELDS, json_object_to_json_string(*json));
+        curl_easy_setopt(send_request, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
         curl_easy_setopt(send_request, CURLOPT_HTTPHEADER, slist_json);
         curl_easy_setopt(send_request, CURLOPT_CUSTOMREQUEST, "POST");
     } else {
@@ -57,7 +57,7 @@ json_object *bot_get(const char *method, json_object **json) {
     return data;
 }
 
-int bot_post(const char *method, json_object **json) {
+int bot_post(const char *method, json_object *json) {
     char method_url[bot_strlen(api) + bot_strlen(method) + 2];
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
@@ -66,7 +66,7 @@ int bot_post(const char *method, json_object **json) {
     struct bot_curl_string string = {0};
 
     curl_easy_setopt(send_request, CURLOPT_URL, method_url);
-    curl_easy_setopt(send_request, CURLOPT_POSTFIELDS, json_object_to_json_string(*json));
+    curl_easy_setopt(send_request, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
     curl_easy_setopt(send_request, CURLOPT_HTTPHEADER, slist_json);
     curl_easy_setopt(send_request, CURLOPT_CUSTOMREQUEST, "POST");
     curl_easy_setopt(send_request, CURLOPT_WRITEFUNCTION, bot_curl_writefunction);
@@ -130,7 +130,7 @@ json_object *bot_get_update(int offset) {
     json_object *get_updates = json_object_new_object();
     json_object_object_add(get_updates, "offset", json_object_new_int(offset));
 
-    json_object *update_json = bot_get("getUpdates", &get_updates);
+    json_object *update_json = bot_get("getUpdates", get_updates);
     json_object_put(get_updates);
 
     if(json_object_get_type(json_object_object_get(update_json, "result")) != json_type_array) {
