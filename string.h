@@ -1,14 +1,12 @@
 #include <stddef.h>
 
-void bot_memcpy(void *dest, const void *src, size_t n);
-
-void bot_memmove(void *dest, const void *src, size_t n);
+void *bot_memcpy(void *dest, const void *src, size_t n);
 
 size_t bot_strlen(const char *string);
 
-void bot_strncpy(char *dest, const char *src, size_t n);
+char *bot_strncpy(char *dest, const char *src, size_t n);
 
-void bot_strncat(char *dest, const char *src, size_t n);
+char *bot_strncat(char *dest, const char *src, size_t n);
 
 int bot_strcmp(const char *string1, const char *string2);
 

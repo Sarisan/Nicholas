@@ -1,12 +1,14 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-void bot_memcpy(void *dest, const void *src, size_t n) {
+void *bot_memcpy(void *dest, const void *src, size_t n) {
     char *d = dest;
     const char *s = src;
 
     for(size_t length = 0; length < n; length++)
         d[length] = s[length];
+
+    return dest;
 }
 
 size_t bot_strlen(const char *string) {
@@ -18,7 +20,7 @@ size_t bot_strlen(const char *string) {
     return length;
 }
 
-void bot_strncpy(char *dest, const char *src, size_t n) {
+char *bot_strncpy(char *dest, const char *src, size_t n) {
     size_t length = bot_strlen(src);
     bot_memcpy(dest, src, n - 1);
 
@@ -26,9 +28,11 @@ void bot_strncpy(char *dest, const char *src, size_t n) {
         dest[length] = 0;
     else
         dest[n - 1] = 0;
+
+    return dest;
 }
 
-void bot_strncat(char *dest, const char *src, size_t n) {
+char *bot_strncat(char *dest, const char *src, size_t n) {
     size_t length1 = bot_strlen(dest);
     size_t length2 = bot_strlen(src);
     bot_memcpy(dest + length1, src, n - 1);
@@ -37,6 +41,8 @@ void bot_strncat(char *dest, const char *src, size_t n) {
         dest[length1 + length2] = 0;
     else
         dest[length1 + n - 1] = 0;
+
+    return dest;
 }
 
 int bot_strcmp(const char *string1, const char *string2) {
