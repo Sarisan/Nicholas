@@ -125,7 +125,7 @@ void bot_inline(struct bot_update *result) {
                     else
                         snprintf(csc_size_s, sizeof(csc_size_s), "%.0f B", csc_size);
 
-                    char *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, *csc_format, csc_sample_url[512], csc_preview_url[512];
+                    char *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime = "", *csc_format = "", csc_sample_url[512], csc_preview_url[512];
 
                     if(csc_filetype) {
                         if(!bot_strcmp(csc_filetype, "image/jpeg")) {
@@ -133,7 +133,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             csc_format = "JPEG";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -142,7 +141,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             csc_format = "PNG";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -160,7 +158,6 @@ void bot_inline(struct bot_update *result) {
                                 csc_key = "photo_url";
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
-                                csc_mime = "null";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -178,7 +175,6 @@ void bot_inline(struct bot_update *result) {
                                 csc_key = "photo_url";
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
-                                csc_mime = "null";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -187,7 +183,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             csc_format = "WEBM";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -198,8 +193,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
-                            csc_format = "";
                             bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_preview_url));
                             csc_swidth = 150;
@@ -210,7 +203,6 @@ void bot_inline(struct bot_update *result) {
                         csc_key = "photo_url";
                         csc_width = "photo_width";
                         csc_height = "photo_height";
-                        csc_mime = "null";
                         csc_format = "SWF";
                         bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                         bot_strncpy(csc_preview_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_preview_url));
@@ -225,7 +217,7 @@ void bot_inline(struct bot_update *result) {
                     snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POST_URL, csc_id);
 
                     char csc_button_text[32];
                     snprintf(csc_button_text, sizeof(csc_button_text), "%s %s", csc_rating_s, csc_format);
@@ -310,7 +302,7 @@ void bot_inline(struct bot_update *result) {
                     else if(!bot_strcmp(csc_rating, "e"))
                         csc_rating_s = "Explicit";
 
-                    char *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime, csc_sample_url[512], csc_preview_url[512];
+                    char *csc_method, *csc_key, *csc_width, *csc_height, *csc_mime = "", csc_sample_url[512], csc_preview_url[512];
 
                     if(csc_filetype) {
                         if(!bot_strcmp(csc_filetype, "image/jpeg")) {
@@ -318,7 +310,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "image/png")) {
@@ -326,7 +317,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "image/gif")) {
@@ -342,7 +332,6 @@ void bot_inline(struct bot_update *result) {
                                 csc_key = "photo_url";
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
-                                csc_mime = "null";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -359,7 +348,6 @@ void bot_inline(struct bot_update *result) {
                                 csc_key = "photo_url";
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
-                                csc_mime = "null";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
@@ -368,7 +356,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                             csc_swidth = json_object_get_int(json_object_object_get(csc_data, "preview_width"));
@@ -378,7 +365,6 @@ void bot_inline(struct bot_update *result) {
                             csc_key = "photo_url";
                             csc_width = "photo_width";
                             csc_height = "photo_height";
-                            csc_mime = "null";
                             bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                             bot_strncpy(csc_preview_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_preview_url));
                             csc_swidth = 150;
@@ -389,7 +375,6 @@ void bot_inline(struct bot_update *result) {
                         csc_key = "photo_url";
                         csc_width = "photo_width";
                         csc_height = "photo_height";
-                        csc_mime = "null";
                         bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                         bot_strncpy(csc_preview_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_preview_url));
                         csc_swidth = 150;
@@ -401,7 +386,7 @@ void bot_inline(struct bot_update *result) {
                     bot_free(1, csc_name);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POOL_URL, csc_id);
 
                     char csc_button_text[16];
                     snprintf(csc_button_text, sizeof(csc_button_text), "%s", csc_rating_s);
@@ -623,7 +608,7 @@ void bot_inline(struct bot_update *result) {
                     snprintf(csc_title, sizeof(csc_title), "Post %d", csc_id);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POST_URL, csc_id);
 
                     char callback_data[32];
                     snprintf(callback_data, sizeof(callback_data), "1_%d", csc_id);
@@ -665,7 +650,7 @@ void bot_inline(struct bot_update *result) {
                     snprintf(csc_title, sizeof(csc_title), "Book %d", csc_id);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POOL_URL, csc_id);
 
                     char callback_data[32];
                     snprintf(callback_data, sizeof(callback_data), "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);

@@ -103,7 +103,7 @@ void bot_commands(struct bot_update *result) {
                     bot_csc_post(csc_info, sizeof(csc_info), &csc_data, csc_id);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POST_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POST_URL, csc_id);
 
                     char callback_data[32];
                     snprintf(callback_data, sizeof(callback_data), "1_%d", csc_id);
@@ -134,7 +134,7 @@ void bot_commands(struct bot_update *result) {
                     bot_csc_pool(csc_info, sizeof(csc_info), &csc_data, csc_id);
 
                     char csc_button[128];
-                    snprintf(csc_button, sizeof(csc_button), "%s%d", CSC_POOL_URL, csc_id);
+                    snprintf(csc_button, sizeof(csc_button), "%s/%d", CSC_POOL_URL, csc_id);
 
                     char callback_data[32];
                     snprintf(callback_data, sizeof(callback_data), "5_%d_0_1_%d", csc_id, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")) - 1);

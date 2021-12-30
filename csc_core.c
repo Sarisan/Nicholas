@@ -97,7 +97,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object **csc_data, int csc
             csc_format = "WEBM";
             bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(*csc_data, "preview_url")), sizeof(csc_sample_url));
         } else {
-            csc_format = "";
+            csc_format = "unknown";
             bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
         }
     } else {
@@ -271,6 +271,9 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object **csc_data, int csc_i
             break;
         case 9:
             csc_type_s = "meta";
+            break;
+        default:
+            csc_type_s = "unknown";
             break;
     }
 

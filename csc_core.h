@@ -1,8 +1,8 @@
 #include <json-c/json_object.h>
 #include <time.h>
 
-#define CSC_POST_URL "https://beta.sankakucomplex.com/post/show/"
-#define CSC_POOL_URL "https://beta.sankakucomplex.com/books/"
+#define CSC_POST_URL "https://beta.sankakucomplex.com/post/show"
+#define CSC_POOL_URL "https://beta.sankakucomplex.com/books"
 
 int csc_auth();
 
