@@ -27,12 +27,11 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 
 json_object *bot_get(const char *method, json_object **json) {
     char method_url[bot_strlen(api) + bot_strlen(method) + 2];
-    struct bot_curl_string string = {0};
-
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
-    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     CURL *send_request = curl_easy_init();
+    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
+    struct bot_curl_string string = {0};
 
     curl_easy_setopt(send_request, CURLOPT_URL, method_url);
     if(json) {
@@ -46,8 +45,8 @@ json_object *bot_get(const char *method, json_object **json) {
     curl_easy_setopt(send_request, CURLOPT_WRITEDATA, &string);
     curl_easy_perform(send_request);
 
-    curl_easy_cleanup(send_request);
     curl_slist_free_all(slist_json);
+    curl_easy_cleanup(send_request);
 
     if(!string.string)
         return 0;
@@ -60,12 +59,11 @@ json_object *bot_get(const char *method, json_object **json) {
 
 int bot_post(const char *method, json_object **json) {
     char method_url[bot_strlen(api) + bot_strlen(method) + 2];
-    struct bot_curl_string string = {0};
-
     snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
 
-    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     CURL *send_request = curl_easy_init();
+    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
+    struct bot_curl_string string = {0};
 
     curl_easy_setopt(send_request, CURLOPT_URL, method_url);
     curl_easy_setopt(send_request, CURLOPT_POSTFIELDS, json_object_to_json_string(*json));
@@ -75,8 +73,8 @@ int bot_post(const char *method, json_object **json) {
     curl_easy_setopt(send_request, CURLOPT_WRITEDATA, &string);
     curl_easy_perform(send_request);
 
-    curl_easy_cleanup(send_request);
     curl_slist_free_all(slist_json);
+    curl_easy_cleanup(send_request);
 
     json_object *data = json_tokener_parse(string.string);
     free(string.string);
@@ -130,7 +128,6 @@ int bot_get_username() {
 
 json_object *bot_get_update(int offset) {
     json_object *get_updates = json_object_new_object();
-
     json_object_object_add(get_updates, "offset", json_object_new_int(offset));
 
     json_object *update_json = bot_get("getUpdates", &get_updates);
@@ -157,10 +154,11 @@ json_object *bot_get_update(int offset) {
 }
 
 int bot_command_parse(const char *input, const char *command_text) {
-    char command_from_input[128], command[128];
+    char command_from_input[128];
 
     if(sscanf(input, "/%97s", command_from_input)) {
         if(bot_strcmp(command_from_input, command_text)) {
+            char command[128];
             snprintf(command, sizeof(command), "%s@%s", command_text, bot_username);
             if(bot_strcmp(command_from_input, command))
                 return 1;

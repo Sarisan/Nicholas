@@ -6,18 +6,17 @@
 
 char csc_authorization_header[512];
 
-void *csc_authorization() {
-    extern char *login, *password;
-    struct bot_curl_string string = {0};
-    json_object *login_json = 0;
-
+void *csc_authorization() { 
     json_object *login_object = json_object_new_object();
+
+    extern char *login, *password;
 
     json_object_object_add(login_object, "login", json_object_new_string(login));
     json_object_object_add(login_object, "password", json_object_new_string(password));
 
-    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     CURL *authorize = curl_easy_init();
+    struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
+    struct bot_curl_string string = {0};
 
     curl_easy_setopt(authorize, CURLOPT_URL, "https://capi-v2.sankakucomplex.com/auth/token");
     curl_easy_setopt(authorize, CURLOPT_POSTFIELDS, json_object_to_json_string(login_object));
@@ -28,9 +27,11 @@ void *csc_authorization() {
     curl_easy_setopt(authorize, CURLOPT_WRITEDATA, &string);
     curl_easy_perform(authorize);
 
-    curl_easy_cleanup(authorize);
     curl_slist_free_all(slist_json);
+    curl_easy_cleanup(authorize);
     json_object_put(login_object);
+
+    json_object *login_json = 0;
 
     if(string.string) {
         login_json = json_tokener_parse(string.string);
@@ -53,7 +54,6 @@ void *csc_authorization() {
     printf("Sankaku Channel Authorization: authorized successfully\n");
 
     json_object_put(login_json);
-
     return 0;
 }
 

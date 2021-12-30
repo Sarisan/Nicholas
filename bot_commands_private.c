@@ -3,13 +3,12 @@
 
 void bot_commands_private(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "cscauth")) {
+        json_object *cscauth = json_object_new_object();
+
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
-        int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
         int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message"), "message_id"));
         if(!reply_id)
-            reply_id = message_id;
-
-        json_object *cscauth = json_object_new_object();
+            reply_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));;
 
         json_object_object_add(cscauth, "chat_id", json_object_new_string(chat_id));
         if(!csc_auth())
