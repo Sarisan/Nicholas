@@ -60,30 +60,6 @@ int bot_strcmp(const char *string1, const char *string2) {
     return char1 - char2;
 }
 
-int bot_strncmp(const char *string1, const char *string2, size_t n) {
-    char char1 = 0;
-    char char2 = 0;
-
-    for(size_t c = 0; c < n; c++) {
-        char1 = string1[c];
-        char2 = string2[c];
-
-        if(!char1 || char1 != char2)
-            return char1 - char2;
-    }
-
-    return char1 - char2;
-}
-
-char *bot_strstr(const char *string1, const char *string2) {
-    for(size_t c = 0; c < bot_strlen(string1); c++) {
-        if(!bot_strncmp(&string1[c], string2, bot_strlen(string2)))
-            return (char *)&string1[c];
-    }
-
-    return 0;
-}
-
 char *bot_strenc(const char *input_string, size_t max_length) {
     size_t length = max_length ? max_length : bot_strlen(input_string);
     char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
