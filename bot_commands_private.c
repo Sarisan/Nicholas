@@ -1,5 +1,5 @@
-#include "core.h"
-#include "csc_core.h"
+#include <core.h>
+#include <csc_core.h>
 
 void bot_commands_private(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "cscauth")) {

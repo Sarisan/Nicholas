@@ -1,8 +1,8 @@
-#include "core.h"
+#include <core.h>
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
 #include <pthread.h>
-#include "string.h"
+#include <string.h>
 
 char csc_authorization_header[512];
 

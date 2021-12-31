@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
-#include "string.h"
+#include <string.h>
 
 struct bot_curl_string {
     char *string;

@@ -1,7 +1,7 @@
-#include "core.h"
-#include "csc_core.h"
+#include <core.h>
+#include <csc_core.h>
 #include <curl/curl.h>
-#include "string.h"
+#include <string.h>
 
 void bot_inline(struct bot_update *result) {
     char inline_query[1024], arguments[8] = "", pre_query[1024] = "", query[4096] = "";

@@ -1,10 +1,10 @@
-#include "core.h"
-#include "csc_core.h"
+#include <core.h>
+#include <csc_core.h>
 #include <getopt.h>
 #include <pthread.h>
-#include <stdio.h>
 #include <signal.h>
-#include "string.h"
+#include <stdio.h>
+#include <string.h>
 
 char *api, *admin, *login, *password;
 int global_signal;
@@ -104,13 +104,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    int offset = -1;
-    time_t csc_auth_time = time(0);
-
     if(bot_get_username())
         return 1;
     if(csc_auth())
         return 1;
+
+    int offset = -1;
+    time_t csc_auth_time = time(0);
 
     while(offset) {
         struct bot_update result;

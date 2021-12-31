@@ -1,7 +1,7 @@
-#include "core.h"
-#include "csc_core.h"
+#include <core.h>
+#include <csc_core.h>
 #include <stdio.h>
-#include "string.h"
+#include <string.h>
 
 void bot_callback(struct bot_update *result) {
     short action = 0;

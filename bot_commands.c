@@ -1,7 +1,7 @@
-#include "core.h"
-#include "csc_core.h"
+#include <core.h>
+#include <csc_core.h>
 #include <curl/curl.h>
-#include "string.h"
+#include <string.h>
 
 void bot_commands(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "start") || !bot_command_parse(result->message_text, "help")) {

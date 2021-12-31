@@ -1,7 +1,7 @@
-#include "core.h"
+#include <core.h>
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
-#include "string.h"
+#include <string.h>
 
 json_object *csc_request(long timeout, const char *api_data, ...) {
     va_list args;

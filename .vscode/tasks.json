@@ -15,6 +15,7 @@
 				"-lcurl",
 				"-ljson-c",
 				"-lpthread",
+				"-Iinclude",
 				"-o",
 				"nicholas"
 			],
