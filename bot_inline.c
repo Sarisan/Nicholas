@@ -13,7 +13,7 @@ void bot_inline(struct bot_update *result) {
         char page_buffer[8];
         snprintf(page_buffer, sizeof(page_buffer), "%d", page);
 
-        bot_strncpy(&inline_query[0], &inline_query[bot_strlen(page_buffer)], sizeof(inline_query));
+        bot_strncpy(inline_query, &inline_query[bot_strlen(page_buffer)], sizeof(inline_query));
 
         for(short s = 0; inline_query[s]; s++) {
             if(inline_query[s] == ' ' && inline_query[s + 1] == ' ') {
@@ -25,23 +25,23 @@ void bot_inline(struct bot_update *result) {
         for(short args = 0; args < 5; args++) {
             if(inline_query[0] == 'b' && !action) {
                 action = 1;
-                bot_strncpy(&inline_query[0], &inline_query[1], sizeof(inline_query));
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "b", 2);
             } else if(inline_query[0] == 'n' && action == 1) {
                 action = 2;
-                bot_strncpy(&inline_query[0], &inline_query[1], sizeof(inline_query));
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "n", 2);
             } else if(inline_query[0] == 't' && !action) {
                 action = 3;
-                bot_strncpy(&inline_query[0], &inline_query[1], sizeof(inline_query));
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "t", 2);
             } else if(inline_query[0] == 'p' && !preview) {
                 preview = 1;
-                bot_strncpy(&inline_query[0], &inline_query[1], sizeof(inline_query));
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "p", 2);
             } else if(inline_query[0] == 'a' && !autopaging) {
                 autopaging = 1;
-                bot_strncpy(&inline_query[0], &inline_query[1], sizeof(inline_query));
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "a", 2);
             }
         }
@@ -237,7 +237,7 @@ void bot_inline(struct bot_update *result) {
                     if(arguments[0])
                         bot_strncat(csc_button1, arguments, sizeof(csc_button1) - bot_strlen(csc_button1));
                     if(pre_query[0])
-                        snprintf(csc_button1 + bot_strlen(csc_button1), sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
+                        snprintf(&csc_button1[bot_strlen(csc_button1)], sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
 
                     json_object *inline_keyboard = json_object_new_object();
                     json_object *inline_keyboard1 = json_object_new_array();
@@ -406,7 +406,7 @@ void bot_inline(struct bot_update *result) {
                     if(arguments[0])
                         bot_strncat(csc_button1, arguments, sizeof(csc_button1) - bot_strlen(csc_button1));
                     if(pre_query[0])
-                        snprintf(csc_button1 + bot_strlen(csc_button1), sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
+                        snprintf(&csc_button1[bot_strlen(csc_button1)], sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
                     if(csc_pages == 1)
                         csc_button_text1[6] = 0;
 

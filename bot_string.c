@@ -35,7 +35,7 @@ char *bot_strncpy(char *dest, const char *src, size_t n) {
 char *bot_strncat(char *dest, const char *src, size_t n) {
     size_t length1 = bot_strlen(dest);
     size_t length2 = bot_strlen(src);
-    bot_memcpy(dest + length1, src, n - 1);
+    bot_memcpy(&dest[length1], src, n - 1);
 
     if(n > length2)
         dest[length1 + length2] = 0;
@@ -70,13 +70,13 @@ char *bot_strenc(const char *input_string, size_t max_length) {
 
     for(size_t c = 0; input_string[c] && c < length; c++) {
         if(input_string[c] == '<') {
-            bot_memcpy(output_string + string_size, "&#60;", 5);
+            bot_memcpy(&output_string[string_size], "&#60;", 5);
             string_size += 5;
         } else if(input_string[c] == '>') {
-            bot_memcpy(output_string + string_size, "&#62;", 5);
+            bot_memcpy(&output_string[string_size], "&#62;", 5);
             string_size += 5;
         } else {
-            bot_memcpy(output_string + string_size, &input_string[c], 1);
+            bot_memcpy(&output_string[string_size], &input_string[c], 1);
             string_size += 1;
         }
     }
