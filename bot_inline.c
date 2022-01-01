@@ -17,7 +17,7 @@ void bot_inline(struct bot_update *result) {
 
         for(short s = 0; inline_query[s]; s++) {
             if(inline_query[s] == ' ' && inline_query[s + 1] == ' ') {
-                bot_strncpy(&inline_query[s], &inline_query[s + 1], sizeof(inline_query));
+                bot_strncpy(&inline_query[s], &inline_query[s + 1], sizeof(inline_query) - s);
                 s--;
             }
         }
