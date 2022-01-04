@@ -7,7 +7,7 @@ void bot_inline(struct bot_update *result) {
     char inline_query[1024], arguments[8] = "", pre_query[1024] = "", query[4096] = "";
     short page, action = 0, preview = 0, autopaging = 0;
 
-    snprintf(inline_query, sizeof(inline_query), "%s", result->inline_query);
+    bot_strncpy(inline_query, result->inline_query, sizeof(inline_query));
 
     if(sscanf(result->inline_query, "%hd", &page) == 1) {
         char page_buffer[8];
@@ -48,7 +48,7 @@ void bot_inline(struct bot_update *result) {
 
         if(inline_query[0]) {
             if(inline_query[0] == ' ') {
-                bot_strncpy(&pre_query[0], &inline_query[1], sizeof(pre_query));
+                bot_strncpy(pre_query, &inline_query[1], sizeof(pre_query));
 
                 CURL *encode_query = curl_easy_init();
                 char *encoded_query = curl_easy_escape(encode_query, pre_query, 0);
