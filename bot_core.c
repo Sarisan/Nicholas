@@ -169,3 +169,40 @@ int bot_command_parse(const char *input, const char *command_text) {
 
     return 0;
 }
+
+int bot_command_getarg(const char *input, size_t max_args, size_t max_length, char array[max_args][max_length]) {
+    char arguments[20480];
+    bot_strncpy(arguments, input, sizeof(arguments));
+
+    for(short s = 0; arguments[s]; s++) {
+        if(arguments[s] == ' ' && arguments[s + 1] == ' ') {
+            bot_strncpy(&arguments[s], &arguments[s + 1], sizeof(arguments) - s);
+            s--;
+        }
+    }
+
+    char command[128], first_argument[20480];
+    int count = 0;
+
+    if(sscanf(input, "/%97s %20479s", command, first_argument) == 2) {
+        bot_strncpy(arguments, &arguments[bot_strlen(command) + 2], sizeof(arguments));
+
+        while(count < max_args) {
+            char argument[20480];
+            int args = sscanf(arguments, "%20479s %20479s", argument, first_argument);
+
+            if(args >= 1) {
+                bot_strncpy(array[count], argument, max_length);
+                count++;
+            }
+
+            if(args == 1)
+                break;
+
+            if(args == 2)
+                bot_strncpy(arguments, &arguments[bot_strlen(argument) + 1], sizeof(arguments));
+        }
+    }
+
+    return count;
+}

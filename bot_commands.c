@@ -38,30 +38,43 @@ void bot_commands(struct bot_update *result) {
         bot_post("sendMessage", info);
         json_object_put(info);
     } else if(!bot_command_parse(result->message_text, "original") || !bot_command_parse(result->message_text, "post") || !bot_command_parse(result->message_text, "book")) {
-        char placeholder[128], argument[16] = "";
-
-        if(sscanf(result->message_text, "/%97s %15s", placeholder, argument) != 2) {
-            json_object *reply_to_message = json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message");
-            if(json_object_get_string(json_object_object_get(reply_to_message, "caption"))
-              && json_object_get_boolean(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "is_bot"))
-              && !bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username))
-                sscanf(json_object_get_string(json_object_object_get(reply_to_message, "caption")), "ID: %15s", argument);
-        }
-
-        json_object *info = json_object_new_object();
-
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
 
-        json_object_object_add(info, "chat_id", json_object_new_string(chat_id));
+        char arguments[20][16];
+        int args = bot_command_getarg(result->message_text, 20, 16, arguments);
 
-        if(argument[0]) {
+        if(!args) {
+            json_object *reply_to_message = json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message");
+            if(json_object_get_string(json_object_object_get(reply_to_message, "caption"))
+              && json_object_get_boolean(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "is_bot"))
+              && !bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username)
+              && sscanf(json_object_get_string(json_object_object_get(reply_to_message, "caption")), "ID: %15s", arguments[0]) == 1) {
+                args = 1;
+            } else {
+                json_object *error = json_object_new_object();
+
+                json_object_object_add(error, "chat_id", json_object_new_string(chat_id));
+                json_object_object_add(error, "text", json_object_new_string("<b>You must specify an ID or reply to the message with inline mode result</b>"));
+                json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
+                json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
+
+                bot_post("sendMessage", error);
+                json_object_put(error);
+            }
+        }
+
+        for(short arg = 0; arg < args; arg++) {
+            json_object *info = json_object_new_object();
+
+            json_object_object_add(info, "chat_id", json_object_new_string(chat_id));
+
             json_object *csc_data;
 
             if(bot_command_parse(result->message_text, "book"))
-                csc_data = csc_request(0, "posts/%s/", argument);
+                csc_data = csc_request(0, "posts/%s/", arguments[arg]);
             else
-                csc_data = csc_request(0, "pools/%s/", argument);
+                csc_data = csc_request(0, "pools/%s/", arguments[arg]);
 
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
@@ -175,9 +188,9 @@ void bot_commands(struct bot_update *result) {
 
                 if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found")) {
                     if(bot_command_parse(result->message_text, "book"))
-                        snprintf(error_description, sizeof(error_description), "<b>Wrong post ID</b>");
+                        snprintf(error_description, sizeof(error_description), "<b>Wrong post ID:</b> <code>%s</code>", arguments[arg]);
                     else
-                        snprintf(error_description, sizeof(error_description), "<b>Wrong book ID</b>");
+                        snprintf(error_description, sizeof(error_description), "<b>Wrong book ID:</b> <code>%s</code>", arguments[arg]);
                 } else if(error_code) {
                     snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);
                 } else {
@@ -189,55 +202,63 @@ void bot_commands(struct bot_update *result) {
                 json_object_object_add(info, "reply_to_message_id", json_object_new_int(message_id));
             }
             json_object_put(csc_data);
-        } else {
-            json_object_object_add(info, "text", json_object_new_string("<b>You must specify an ID or reply to the message with inline mode result</b>"));
-            json_object_object_add(info, "parse_mode", json_object_new_string("HTML"));
-            json_object_object_add(info, "reply_to_message_id", json_object_new_int(message_id));
-        }
 
-        const char *document = json_object_get_string(json_object_object_get(info, "document"));
+            const char *document = json_object_get_string(json_object_object_get(info, "document"));
 
-        if(document) {
-            if(bot_post("sendDocument", info)) {
-                json_object *error = json_object_new_object();
-                json_object *button = json_object_new_object();
-                json_object *inline_keyboard = json_object_new_object();
-                json_object *inline_keyboard1 = json_object_new_array();
-                json_object *inline_keyboard2 = json_object_new_array();
+            if(document) {
+                if(bot_post("sendDocument", info)) {
+                    json_object *error = json_object_new_object();
+                    json_object *button = json_object_new_object();
+                    json_object *inline_keyboard = json_object_new_object();
+                    json_object *inline_keyboard1 = json_object_new_array();
+                    json_object *inline_keyboard2 = json_object_new_array();
 
-                json_object_object_add(error, "chat_id", json_object_new_string(chat_id));
-                json_object_object_add(error, "text", json_object_new_string("<b>Failed to access file</b>"));
-                json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
-                json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
-                json_object_object_add(button, "text", json_object_new_string("Download manually, link expires in 3 hours"));
-                json_object_object_add(button, "url", json_object_new_string(document));
-                json_object_array_add(inline_keyboard2, button);
-                json_object_array_add(inline_keyboard1, inline_keyboard2);
-                json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
-                json_object_object_add(error, "reply_markup", inline_keyboard);
+                    json_object_object_add(error, "chat_id", json_object_new_string(chat_id));
+                    json_object_object_add(error, "text", json_object_new_string("<b>Failed to access file</b>"));
+                    json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
+                    json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
+                    json_object_object_add(button, "text", json_object_new_string("Download manually, link expires in 3 hours"));
+                    json_object_object_add(button, "url", json_object_new_string(document));
+                    json_object_array_add(inline_keyboard2, button);
+                    json_object_array_add(inline_keyboard1, inline_keyboard2);
+                    json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
+                    json_object_object_add(error, "reply_markup", inline_keyboard);
 
-                bot_post("sendMessage", error);
-                json_object_put(error);
+                    bot_post("sendMessage", error);
+                    json_object_put(error);
+                }
+            } else {
+                bot_post("sendMessage", info);
             }
-        } else {
-            bot_post("sendMessage", info);
+
+            json_object_put(info);
         }
-
-        json_object_put(info);
     } else if(!bot_command_parse(result->message_text, "tag")) {
-        char placeholder[128], argument[1024] = "";
-        sscanf(result->message_text, "/%97s %1023s", placeholder, argument);
-
-        json_object *tag = json_object_new_object();
-
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
 
-        json_object_object_add(tag, "chat_id", json_object_new_string(chat_id));
+        char arguments[20][1024];
+        int args = bot_command_getarg(result->message_text, 20, 1024, arguments);
 
-        if(argument[0]) {
+        if(!args) {
+            json_object *error = json_object_new_object();
+
+            json_object_object_add(error, "chat_id", json_object_new_string(chat_id));
+            json_object_object_add(error, "text", json_object_new_string("<b>You must specify a tag ID or name</b>"));
+            json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
+            json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
+
+            bot_post("sendMessage", error);
+            json_object_put(error);
+        }
+
+        for(short arg = 0; arg < args; arg++) {
+            json_object *tag = json_object_new_object();
+
+            json_object_object_add(tag, "chat_id", json_object_new_string(chat_id));
+
             CURL *encode_argument = curl_easy_init();
-            char *encoded_argument = curl_easy_escape(encode_argument, argument, 0);
+            char *encoded_argument = curl_easy_escape(encode_argument, arguments[arg], 0);
 
             json_object *csc_data = csc_request(0, "tags/%s/", encoded_argument);
 
@@ -287,10 +308,10 @@ void bot_commands(struct bot_update *result) {
             } else {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 
-                char error_description[256];
+                char error_description[1024];
 
                 if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found"))
-                    snprintf(error_description, sizeof(error_description), "<b>Wrong tag ID or name</b>");
+                    snprintf(error_description, sizeof(error_description), "<b>Wrong tag ID or name:</b> <code>%s</code>", arguments[arg]);
                 else if(error_code)
                     snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);
                 else
@@ -301,13 +322,9 @@ void bot_commands(struct bot_update *result) {
                 json_object_object_add(tag, "reply_to_message_id", json_object_new_int(message_id));
             }
             json_object_put(csc_data);
-        } else {
-            json_object_object_add(tag, "text", json_object_new_string("<b>You must specify a tag ID or name</b>"));
-            json_object_object_add(tag, "parse_mode", json_object_new_string("HTML"));
-            json_object_object_add(tag, "reply_to_message_id", json_object_new_int(message_id));
-        }
 
-        bot_post("sendMessage", tag);
-        json_object_put(tag);
+            bot_post("sendMessage", tag);
+            json_object_put(tag);
+        }
     }
 }
