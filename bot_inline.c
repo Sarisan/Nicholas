@@ -159,6 +159,8 @@ void bot_inline(struct bot_update *result) {
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+                                csc_swidth = json_object_get_int(json_object_object_get(csc_data, "preview_width"));
+                                csc_sheight = json_object_get_int(json_object_object_get(csc_data, "preview_height"));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
@@ -176,6 +178,8 @@ void bot_inline(struct bot_update *result) {
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+                                csc_swidth = json_object_get_int(json_object_object_get(csc_data, "preview_width"));
+                                csc_sheight = json_object_get_int(json_object_object_get(csc_data, "preview_height"));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "video/webm")) {
@@ -333,6 +337,8 @@ void bot_inline(struct bot_update *result) {
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+                                csc_swidth = json_object_get_int(json_object_object_get(csc_data, "preview_width"));
+                                csc_sheight = json_object_get_int(json_object_object_get(csc_data, "preview_height"));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
@@ -349,6 +355,8 @@ void bot_inline(struct bot_update *result) {
                                 csc_width = "photo_width";
                                 csc_height = "photo_height";
                                 bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+                                csc_swidth = json_object_get_int(json_object_object_get(csc_data, "preview_width"));
+                                csc_sheight = json_object_get_int(json_object_object_get(csc_data, "preview_height"));
                             }
                             bot_strncpy(csc_preview_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_preview_url));
                         } else if(!bot_strcmp(csc_filetype, "video/webm")) {
