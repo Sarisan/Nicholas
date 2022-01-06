@@ -5,7 +5,7 @@
 
 void bot_inline(struct bot_update *result) {
     char inline_query[1024], arguments[8] = "", pre_query[1024] = "", query[4096] = "";
-    short page, action = 0, preview = 0, autopaging = 0;
+    short page, action = 0, preview = 0, autopaging = 0, quickaccess = 0;
 
     bot_strncpy(inline_query, result->inline_query, sizeof(inline_query));
 
@@ -22,7 +22,7 @@ void bot_inline(struct bot_update *result) {
             }
         }
 
-        for(short args = 0; args < 5; args++) {
+        for(short args = 0; args < 6; args++) {
             if(inline_query[0] == 'b' && !action) {
                 action = 1;
                 bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
@@ -43,6 +43,10 @@ void bot_inline(struct bot_update *result) {
                 autopaging = 1;
                 bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
                 bot_strncat(arguments, "a", 2);
+            } else if(inline_query[0] == 'q' && !quickaccess) {
+                quickaccess = 1;
+                bot_strncpy(inline_query, &inline_query[1], sizeof(inline_query));
+                bot_strncat(arguments, "q", 2);
             }
         }
 
@@ -243,15 +247,11 @@ void bot_inline(struct bot_update *result) {
                     if(pre_query[0])
                         snprintf(&csc_button1[bot_strlen(csc_button1)], sizeof(csc_button1) - bot_strlen(csc_button1), " %s", pre_query);
 
+                    json_object *button = json_object_new_object();
+                    json_object *button1 = json_object_new_object();
                     json_object *inline_keyboard = json_object_new_object();
                     json_object *inline_keyboard1 = json_object_new_array();
                     json_object *inline_keyboard2 = json_object_new_array();
-                    json_object *inline_keyboard3 = json_object_new_array();
-                    json_object *inline_keyboard4 = json_object_new_array();
-                    json_object *button = json_object_new_object();
-                    json_object *button1 = json_object_new_object();
-                    json_object *button2 = json_object_new_object();
-                    json_object *button3 = json_object_new_object();
 
                     json_object_object_add(csc_result, "type", json_object_new_string(csc_method));
                     json_object_object_add(csc_result, "id", json_object_new_int64(csc_id * 1000 + page));
@@ -268,21 +268,28 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(button1, "text", json_object_new_string(csc_button_text1));
                     json_object_object_add(button1, "switch_inline_query_current_chat", json_object_new_string(csc_button1));
                     if(csc_swidth < csc_sheight || csc_swidth < 500) {
+                        json_object *inline_keyboard3 = json_object_new_array();
+
                         json_object_array_add(inline_keyboard3, button1);
                         json_object_array_add(inline_keyboard1, inline_keyboard2);
                         json_object_array_add(inline_keyboard1, inline_keyboard3);
                     } else {
                         json_object_array_add(inline_keyboard2, button1);
                         json_object_array_add(inline_keyboard1, inline_keyboard2);
-                        json_object_put(inline_keyboard3);
                     }
-                    json_object_object_add(button2, "text", json_object_new_string("Original file"));
-                    json_object_object_add(button2, "switch_inline_query_current_chat", json_object_new_string(csc_button2));
-                    json_object_array_add(inline_keyboard4, button2);
-                    json_object_object_add(button3, "text", json_object_new_string("Information"));
-                    json_object_object_add(button3, "switch_inline_query_current_chat", json_object_new_string(csc_button3));
-                    json_object_array_add(inline_keyboard4, button3);
-                    json_object_array_add(inline_keyboard1, inline_keyboard4);
+                    if(quickaccess) {
+                        json_object *button2 = json_object_new_object();
+                        json_object *button3 = json_object_new_object();
+                        json_object *inline_keyboard4 = json_object_new_array();
+
+                        json_object_object_add(button2, "text", json_object_new_string("Original file"));
+                        json_object_object_add(button2, "switch_inline_query_current_chat", json_object_new_string(csc_button2));
+                        json_object_array_add(inline_keyboard4, button2);
+                        json_object_object_add(button3, "text", json_object_new_string("Information"));
+                        json_object_object_add(button3, "switch_inline_query_current_chat", json_object_new_string(csc_button3));
+                        json_object_array_add(inline_keyboard4, button3);
+                        json_object_array_add(inline_keyboard1, inline_keyboard4);
+                    }
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                 } if(action == 1 || action == 2) {
@@ -418,14 +425,11 @@ void bot_inline(struct bot_update *result) {
                     if(csc_pages == 1)
                         csc_button_text1[6] = 0;
 
+                    json_object *button = json_object_new_object();
+                    json_object *button1 = json_object_new_object();
                     json_object *inline_keyboard = json_object_new_object();
                     json_object *inline_keyboard1 = json_object_new_array();
                     json_object *inline_keyboard2 = json_object_new_array();
-                    json_object *inline_keyboard3 = json_object_new_array();
-                    json_object *button = json_object_new_object();
-                    json_object *button1 = json_object_new_object();
-                    json_object *button2 = json_object_new_object();
-                    json_object *button3 = json_object_new_object();
 
                     json_object_object_add(csc_result, "type", json_object_new_string(csc_method));
                     json_object_object_add(csc_result, "id", json_object_new_int64(csc_id * 1000 + page));
@@ -443,13 +447,19 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(button1, "switch_inline_query_current_chat", json_object_new_string(csc_button1));
                     json_object_array_add(inline_keyboard2, button1);
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
-                    json_object_object_add(button2, "text", json_object_new_string("Preview"));
-                    json_object_object_add(button2, "switch_inline_query_current_chat", json_object_new_string(csc_button2));
-                    json_object_array_add(inline_keyboard3, button2);
-                    json_object_object_add(button3, "text", json_object_new_string("Information"));
-                    json_object_object_add(button3, "switch_inline_query_current_chat", json_object_new_string(csc_button3));
-                    json_object_array_add(inline_keyboard3, button3);
-                    json_object_array_add(inline_keyboard1, inline_keyboard3);
+                    if(quickaccess) {
+                        json_object *button2 = json_object_new_object();
+                        json_object *button3 = json_object_new_object();
+                        json_object *inline_keyboard3 = json_object_new_array();
+
+                        json_object_object_add(button2, "text", json_object_new_string("Preview"));
+                        json_object_object_add(button2, "switch_inline_query_current_chat", json_object_new_string(csc_button2));
+                        json_object_array_add(inline_keyboard3, button2);
+                        json_object_object_add(button3, "text", json_object_new_string("Information"));
+                        json_object_object_add(button3, "switch_inline_query_current_chat", json_object_new_string(csc_button3));
+                        json_object_array_add(inline_keyboard3, button3);
+                        json_object_array_add(inline_keyboard1, inline_keyboard3);
+                    }
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                 } else if(action == 3) {
