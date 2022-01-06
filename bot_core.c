@@ -18,7 +18,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
     if(!string->string)
         return 0;
 
-    bot_memcpy(string->string + string->length, data, realsize);
+    bot_memcpy(&string->string[string->length], data, realsize);
     string->length += realsize;
     string->string[string->length] = 0;
     
@@ -140,14 +140,10 @@ json_object *bot_get_update(int offset) {
     }
 
     json_object *update_idx = json_object_array_get_idx(json_object_object_get(update_json, "result"), 0);
-
-    if(!update_idx) {
-        json_object_put(update_json);
-        return 0;
-    }
-
     json_object *update = 0;
-    json_object_deep_copy(update_idx, &update, 0);
+    
+    if(update_idx)
+        json_object_deep_copy(update_idx, &update, 0);
 
     json_object_put(update_json);
     return update;
