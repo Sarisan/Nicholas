@@ -5,7 +5,7 @@ void *bot_memcpy(void *dest, const void *src, size_t n) {
     char *d = dest;
     const char *s = src;
 
-    for(size_t length = 0; length < n; length++)
+    for(size_t length = 0; length < n && s[length]; length++)
         d[length] = s[length];
 
     return dest;
