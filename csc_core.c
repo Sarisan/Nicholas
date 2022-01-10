@@ -54,7 +54,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
     const char *csc_source = json_object_get_string(json_object_object_get(csc_data, "source"));
 
-    char *csc_rating_s = "";
+    char *csc_rating_s;
     
     if(!bot_strcmp(csc_rating, "s"))
         csc_rating_s = "safe";
@@ -62,6 +62,8 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
         csc_rating_s = "questionable";
     else if(!bot_strcmp(csc_rating, "e"))
         csc_rating_s = "explicit";
+    else
+        csc_rating_s = "unknown";
 
     char csc_size_s[16] = "";
 
@@ -164,7 +166,7 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
         bot_strncpy(csc_description_s, "none", sizeof(csc_description));
     }
 
-    char *csc_rating_s = "";
+    char *csc_rating_s;
 
     if(!bot_strcmp(csc_rating, "s"))
         csc_rating_s = "safe";
@@ -172,6 +174,8 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
         csc_rating_s = "questionable";
     else if(!bot_strcmp(csc_rating, "e"))
         csc_rating_s = "explicit";
+    else
+        csc_rating_s = "unknown";
 
     char csc_sample_url[512];
 
@@ -232,7 +236,7 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
         bot_strncpy(csc_name_ja_s, "none", sizeof(csc_name_ja_s));
     }
 
-    char *csc_rating_s = "";
+    char *csc_rating_s;
 
     if(csc_rating) {
         if(!bot_strcmp(csc_rating, "s"))
@@ -241,6 +245,8 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
             csc_rating_s = "questionable";
         else if(!bot_strcmp(csc_rating, "e"))
             csc_rating_s = "explicit";
+        else
+            csc_rating_s = "unknown";
     } else {
         csc_rating_s = "none";
     }
