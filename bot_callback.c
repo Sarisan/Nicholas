@@ -35,7 +35,7 @@ void bot_callback(struct bot_update *result) {
             if(action == 1 || action == 2) {
                 json_object *csc_tags_array = json_object_object_get(csc_data, "tags");
                 short tags_array = offset;
-                char csc_copyright[20480] = "", csc_studio[20480] = "", csc_character[20480] = "", csc_artist[20480] = "", csc_medium[20480] = "", csc_general[20480] = "", csc_meta[20480] = "", csc_genre[20480] = "";
+                char csc_copyright[20480] = "", csc_studio[20480] = "", csc_character[20480] = "", csc_artist[20480] = "", csc_medium[20480] = "", csc_general[20480] = "", csc_meta[20480] = "", csc_genre[20480] = "", csc_unknown[20480] = "";
 
                 for(short tags_count = 0; json_object_array_get_idx(csc_tags_array, tags_array) && tags_count < 60; tags_count++, tags_array++) {
                     char *tag_encoded = bot_strenc(json_object_get_string(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "name")), 64);
@@ -68,6 +68,9 @@ void bot_callback(struct bot_update *result) {
                             break;
                         case 5:
                             bot_strncat(csc_genre, tag, sizeof(csc_genre) - bot_strlen(csc_genre));
+                            break;
+                        default:
+                            bot_strncat(csc_unknown, tag, sizeof(csc_unknown) - bot_strlen(csc_unknown));
                             break;
                     }
                 }
@@ -102,10 +105,14 @@ void bot_callback(struct bot_update *result) {
 
                 char csc_genre_s[20480] = "";
                 if(csc_genre[0])
-                    snprintf(csc_genre_s, sizeof(csc_genre_s), "<b>Genre:</b> %s", csc_genre);
+                    snprintf(csc_genre_s, sizeof(csc_genre_s), "<b>Genre:</b> %s\n", csc_genre);
+
+                char csc_unknown_s[20480] = "";
+                if(csc_unknown[0])
+                    snprintf(csc_unknown_s, sizeof(csc_unknown_s), "<b>Unknown:</b> %s", csc_unknown);
 
                 char csc_info[20480];
-                snprintf(csc_info, sizeof(csc_info), "%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s);
+                snprintf(csc_info, sizeof(csc_info), "%s%s%s%s%s%s%s%s%s", csc_copyright_s, csc_studio_s, csc_character_s, csc_artist_s, csc_medium_s, csc_general_s, csc_meta_s, csc_genre_s, csc_unknown_s);
 
                 if(csc_info[0]) {
                     char callback_data[32];
