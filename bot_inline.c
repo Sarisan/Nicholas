@@ -548,7 +548,7 @@ void bot_inline(struct bot_update *result) {
             json_object_array_add(csc_results, csc_result);
         }
 
-        if(autopaging && array)
+        if(autopaging && array && page < 100)
             json_object_object_add(csc_answer, "next_offset", json_object_new_int(page));
 
         json_object_put(data);
