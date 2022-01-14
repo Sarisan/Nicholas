@@ -26,8 +26,10 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     curl_easy_setopt(get_data, CURLOPT_CUSTOMREQUEST, "GET");
     curl_easy_setopt(get_data, CURLOPT_WRITEFUNCTION, bot_curl_writefunction);
     curl_easy_setopt(get_data, CURLOPT_WRITEDATA, &string);
-    if(timeout)
+    if(timeout) {
         curl_easy_setopt(get_data, CURLOPT_TIMEOUT, timeout);
+        curl_easy_setopt(get_data, CURLOPT_CONNECTTIMEOUT, timeout);
+    }
     curl_easy_perform(get_data);
 
     curl_slist_free_all(slist_auth);
