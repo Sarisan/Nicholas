@@ -26,8 +26,12 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 }
 
 json_object *bot_get(const char *method, json_object *json) {
-    char method_url[bot_strlen(api) + bot_strlen(method) + 2];
-    snprintf(method_url, sizeof(method_url), "%s/%s", api, method);
+    size_t length = bot_strlen(api) + bot_strlen(method) + 2;
+    char *method_url = malloc(sizeof(char) * length);
+    if(!method_url)
+        return 0;
+
+    snprintf(method_url, length, "%s/%s", api, method);
 
     CURL *send_request = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
@@ -47,6 +51,7 @@ json_object *bot_get(const char *method, json_object *json) {
 
     curl_slist_free_all(slist_json);
     curl_easy_cleanup(send_request);
+    free(method_url);
 
     if(!string.string)
         return 0;
