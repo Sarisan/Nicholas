@@ -1,7 +1,10 @@
 #include <core.h>
 #include <curl/curl.h>
 #include <json-c/json_tokener.h>
+#include <stdlib.h>
 #include <string.h>
+
+#define CSC_API_URL "https://capi-v2.sankakucomplex.com"
 
 json_object *csc_request(long timeout, const char *api_data, ...) {
     va_list args;
@@ -12,8 +15,12 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     va_end(args);
 
-    char csc_url[bot_strlen(api_data_args) + 64];
-    snprintf(csc_url, sizeof(csc_url), "https://capi-v2.sankakucomplex.com/%s", api_data_args);
+    size_t length = bot_strlen(CSC_API_URL) + bot_strlen(api_data_args) + 2;
+    char *csc_url = malloc(sizeof(char) * length);
+    if(!csc_url)
+        return 0;
+
+    snprintf(csc_url, length, "%s/%s", CSC_API_URL, api_data_args);
 
     CURL *get_data = curl_easy_init();
     extern char csc_authorization_header[512];
@@ -34,12 +41,13 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     curl_slist_free_all(slist_auth);
     curl_easy_cleanup(get_data);
+    free(csc_url);
 
     if(!string.string)
         return 0;
 
     json_object *data = json_tokener_parse(string.string);
-    bot_free(1, string.string);
+    free(string.string);
 
     return data;
 }
