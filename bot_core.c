@@ -86,8 +86,12 @@ int bot_post(const char *method, json_object *json) {
     curl_easy_cleanup(send_request);
     free(method_url);
 
-    json_object *data = json_tokener_parse(string.string);
-    free(string.string);
+    json_object *data = 0;
+
+    if(string.string) {
+        data = json_tokener_parse(string.string);
+        free(string.string);
+    }
 
     if(data) {
         int error_code = json_object_get_int(json_object_object_get(data, "error_code"));
