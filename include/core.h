@@ -18,6 +18,8 @@ struct bot_update {
     const char *message_text;
 };
 
+void bot_log(int error, const char *format, ...);
+
 size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_curl_string *string);
 
 json_object *bot_get(const char *method, json_object *json);

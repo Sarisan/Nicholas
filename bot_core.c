@@ -11,6 +11,27 @@ struct bot_curl_string {
 extern char *api;
 char bot_username[64];
 
+void bot_log(int error, const char *format, ...) {
+    time_t current_time = time(0);
+    struct tm *date = localtime(&current_time);
+
+    char log[32];
+    strftime(log, sizeof(log), "%d.%m %T", date);
+
+    va_list args;
+    va_start(args, format);
+
+    if(error) {
+        fprintf(stderr, "[%s] [%d] ", log, error);
+        vfprintf(stderr, format, args);
+    } else {
+        printf("[%s] ", log);
+        vprintf(format, args);
+    }
+
+    va_end(args);
+}
+
 size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_curl_string *string) {
     size_t realsize = size * nmemb;
 
@@ -98,12 +119,12 @@ int bot_post(const char *method, json_object *json) {
         const char *description = json_object_get_string(json_object_object_get(data, "description"));
 
         if(error_code && description) {
-            fprintf(stderr, "Post: %d, %s\n", error_code, description);
+            bot_log(error_code, "Post: %s\n", description);
             json_object_put(data);
             return error_code;
         }
     } else {
-        fprintf(stderr, "Post: unknown error\n");
+        bot_log(-1, "Post: unknown error\n");
         json_object_put(data);
         return -1;
     }
@@ -120,18 +141,18 @@ int bot_get_username() {
             const char *error_description = json_object_get_string(json_object_object_get(bot_json, "description"));
 
             if(error_description)
-                fprintf(stderr, "Bot: %s\n", error_description);
+                bot_log(1, "Bot: %s\n", error_description);
             else
-                fprintf(stderr, "Bot: unknown error\n");
+                bot_log(1, "Bot: unknown error\n");
 
             json_object_put(bot_json);
             return 1;
         }
 
         bot_strncpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
-        printf("Bot: @%s\n", bot_username);
+        bot_log(0, "Bot: @%s\n", bot_username);
     } else {
-        fprintf(stderr, "Bot: unable to get username\n");
+        bot_log(1, "Bot: unable to get username\n");
         json_object_put(bot_json);
         return 1;
     }
@@ -148,7 +169,7 @@ json_object *bot_get_update(int offset) {
     json_object_put(get_updates);
 
     if(json_object_get_type(json_object_object_get(update_json, "result")) != json_type_array) {
-        fprintf(stderr, "Update: unable to get updates\n");
+        bot_log(0, "Update: unable to get updates\n");
         json_object_put(update_json);
         return 0;
     }
