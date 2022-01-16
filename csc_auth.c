@@ -1,5 +1,6 @@
 #include <core.h>
 #include <curl/curl.h>
+#include <errno.h>
 #include <json-c/json_tokener.h>
 #include <pthread.h>
 #include <string.h>
@@ -42,9 +43,9 @@ void *csc_authorization() {
         const char *error = json_object_get_string(json_object_object_get(login_json, "error"));
 
         if(error)
-            bot_log(1, "Sankaku Channel Authorization: %s\n", error);
+            bot_log(EINVAL, "Sankaku Channel Authorization: %s\n", error);
         else
-            bot_log(1, "Sankaku Channel Authorization: unknown error\n");
+            bot_log(EINVAL, "Sankaku Channel Authorization: unknown error\n");
 
         json_object_put(login_json);
         return (void *)1;
@@ -65,7 +66,7 @@ int csc_auth() {
     pthread_join(auth_thread, &auth);
 
     if(auth)
-        return 1;
+        return -EINVAL;
 
     return 0;
 }

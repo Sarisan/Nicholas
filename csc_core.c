@@ -1,5 +1,6 @@
 #include <core.h>
 #include <curl/curl.h>
+#include <errno.h>
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +19,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     size_t length = bot_strlen(CSC_API_URL) + bot_strlen(api_data_args) + 2;
     char *csc_url = malloc(sizeof(char) * length);
     if(!csc_url) {
-        bot_log(0, "csc_request: failed to allocate memory\n");
+        bot_log(ENOMEM, "csc_request: failed to allocate memory\n");
         return 0;
     }
 

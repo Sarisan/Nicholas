@@ -1,4 +1,5 @@
 #include <core.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
@@ -65,7 +66,7 @@ char *bot_strenc(const char *input_string, size_t max_length) {
     size_t length = max_length ? max_length : bot_strlen(input_string);
     char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
     if(!output_string) {
-        bot_log(0, "bot_strenc: failed to allocate memory\n");
+        bot_log(ENOMEM, "bot_strenc: failed to allocate memory\n");
         return 0;
     }
 

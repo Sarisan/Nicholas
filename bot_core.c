@@ -1,4 +1,5 @@
 #include <curl/curl.h>
+#include <errno.h>
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,8 +37,9 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
     size_t realsize = size * nmemb;
 
     string->string = realloc(string->string, string->length + realsize + 1);
+
     if(!string->string) {
-        bot_log(0, "bot_curl_writefunction: failed to reallocate memory\n");
+        bot_log(ENOMEM, "bot_curl_writefunction: failed to reallocate memory\n");
         return 0;
     }
 
@@ -51,8 +53,9 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 json_object *bot_get(const char *method, json_object *json) {
     size_t length = bot_strlen(api) + bot_strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
+
     if(!method_url) {
-        bot_log(0, "bot_get: failed to allocate memory\n");
+        bot_log(ENOMEM, "bot_get: failed to allocate memory\n");
         return 0;
     }
 
@@ -90,9 +93,10 @@ json_object *bot_get(const char *method, json_object *json) {
 int bot_post(const char *method, json_object *json) {
     size_t length = bot_strlen(api) + bot_strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
+
     if(!method_url) {
-        bot_log(0, "bot_post: failed to allocate memory\n");
-        return 0;
+        bot_log(ENOMEM, "bot_post: failed to allocate memory\n");
+        return -ENOMEM;
     }
 
     snprintf(method_url, length, "%s/%s", api, method);
@@ -130,9 +134,9 @@ int bot_post(const char *method, json_object *json) {
             return error_code;
         }
     } else {
-        bot_log(-1, "Post: unknown error\n");
+        bot_log(EINVAL, "Post: unknown error\n");
         json_object_put(data);
-        return -1;
+        return -EINVAL;
     }
 
     json_object_put(data);
@@ -147,20 +151,20 @@ int bot_get_username() {
             const char *error_description = json_object_get_string(json_object_object_get(bot_json, "description"));
 
             if(error_description)
-                bot_log(1, "Bot: %s\n", error_description);
+                bot_log(EINVAL, "Bot: %s\n", error_description);
             else
-                bot_log(1, "Bot: unknown error\n");
+                bot_log(EINVAL, "Bot: unknown error\n");
 
             json_object_put(bot_json);
-            return 1;
+            return -EINVAL;
         }
 
         bot_strncpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
         bot_log(0, "Bot: @%s\n", bot_username);
     } else {
-        bot_log(1, "Bot: unable to get username\n");
+        bot_log(EINVAL, "Bot: unable to get username\n");
         json_object_put(bot_json);
-        return 1;
+        return -EINVAL;
     }
 
     json_object_put(bot_json);
@@ -198,10 +202,10 @@ int bot_command_parse(const char *input, const char *command_text) {
             char command[128];
             snprintf(command, sizeof(command), "%s@%s", command_text, bot_username);
             if(bot_strcmp(command_from_input, command))
-                return 1;
+                return -EINVAL;
         }
     } else {
-        return 2;
+        return -EBADR;
     }
 
     return 0;
@@ -239,6 +243,8 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
             if(args == 2)
                 bot_strncpy(arguments, &arguments[bot_strlen(argument) + 1], sizeof(arguments));
         }
+    } else {
+        return -EBADR;
     }
 
     return count;

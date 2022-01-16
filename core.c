@@ -1,5 +1,6 @@
 #include <core.h>
 #include <csc_core.h>
+#include <errno.h>
 #include <getopt.h>
 #include <pthread.h>
 #include <signal.h>
@@ -80,7 +81,7 @@ int main(int argc, char **argv) {
                 password = optarg;
                 break;
             default:
-                return 1;
+                return -EINVAL;
         }
     }
 
@@ -95,19 +96,19 @@ int main(int argc, char **argv) {
         return 0;
     } if(!api || (api && !api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
-        return 1;
+        return -ENODATA;
     } if(!login || (login && !api[0])) {
         fprintf(stderr, "%s: Sankaku Channel login is not set\n", argv[0]);
-        return 1;
+        return -ENODATA;
     } if(!password || (password && !password[0])) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
-        return 1;
+        return -ENODATA;
     }
 
     if(bot_get_username())
-        return 1;
+        return -EINVAL;
     if(csc_auth())
-        return 1;
+        return -EINVAL;
 
     int offset = -1;
     time_t csc_auth_time = time(0);
