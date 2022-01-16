@@ -81,8 +81,10 @@ json_object *bot_get(const char *method, json_object *json) {
     curl_easy_cleanup(send_request);
     free(method_url);
 
-    if(!string.string)
+    if(!string.string) {
+        bot_log(EINVAL, "bot_get: no answer from server\n");
         return 0;
+    }
 
     json_object *data = json_tokener_parse(string.string);
     free(string.string);
@@ -117,24 +119,25 @@ int bot_post(const char *method, json_object *json) {
     curl_easy_cleanup(send_request);
     free(method_url);
 
-    json_object *data = 0;
-
-    if(string.string) {
-        data = json_tokener_parse(string.string);
-        free(string.string);
+    if(!string.string) {
+        bot_log(EINVAL, "bot_post: no answer from server\n");
+        return -EINVAL;
     }
+
+    json_object *data = json_tokener_parse(string.string);
+    free(string.string);
 
     if(data) {
         int error_code = json_object_get_int(json_object_object_get(data, "error_code"));
         const char *description = json_object_get_string(json_object_object_get(data, "description"));
 
         if(error_code && description) {
-            bot_log(error_code, "Post: %s\n", description);
+            bot_log(error_code, "bot_post: %s\n", description);
             json_object_put(data);
             return error_code;
         }
     } else {
-        bot_log(EINVAL, "Post: unknown error\n");
+        bot_log(EINVAL, "bot_post: unknown error\n");
         json_object_put(data);
         return -EINVAL;
     }
@@ -151,18 +154,18 @@ int bot_get_username() {
             const char *error_description = json_object_get_string(json_object_object_get(bot_json, "description"));
 
             if(error_description)
-                bot_log(EINVAL, "Bot: %s\n", error_description);
+                bot_log(EINVAL, "bot_get_username: %s\n", error_description);
             else
-                bot_log(EINVAL, "Bot: unknown error\n");
+                bot_log(EINVAL, "bot_get_username: unknown error\n");
 
             json_object_put(bot_json);
             return -EINVAL;
         }
 
         bot_strncpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
-        bot_log(0, "Bot: @%s\n", bot_username);
+        bot_log(0, "bot_get_username: @%s\n", bot_username);
     } else {
-        bot_log(EINVAL, "Bot: unable to get username\n");
+        bot_log(EINVAL, "bot_get_username: unable to get username\n");
         json_object_put(bot_json);
         return -EINVAL;
     }
@@ -179,7 +182,7 @@ json_object *bot_get_update(int offset) {
     json_object_put(get_updates);
 
     if(json_object_get_type(json_object_object_get(update_json, "result")) != json_type_array) {
-        bot_log(0, "Update: unable to get updates\n");
+        bot_log(0, "bot_get_update: unable to get updates\n");
         json_object_put(update_json);
         return 0;
     }
@@ -223,9 +226,16 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
     }
 
     char command[128], first_argument[20480];
+    int init = sscanf(input, "/%97s %20479s", command, first_argument);
+
+    if(init < 1) {
+        bot_log(EBADR, "bot_command_getarg: not a command\n");
+        return -EBADR;
+    }
+
     int count = 0;
 
-    if(sscanf(input, "/%97s %20479s", command, first_argument) == 2) {
+    if(init == 2) {
         bot_strncpy(arguments, &arguments[bot_strlen(command) + 2], sizeof(arguments));
 
         while(count < max_args) {
@@ -243,8 +253,6 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
             if(args == 2)
                 bot_strncpy(arguments, &arguments[bot_strlen(argument) + 1], sizeof(arguments));
         }
-    } else {
-        return -EBADR;
     }
 
     return count;

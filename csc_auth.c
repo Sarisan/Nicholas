@@ -32,27 +32,28 @@ void *csc_authorization() {
     curl_easy_cleanup(authorize);
     json_object_put(login_object);
 
-    json_object *login_json = 0;
-
-    if(string.string) {
-        login_json = json_tokener_parse(string.string);
-        bot_free(1, string.string);
+    if(!string.string) {
+        bot_log(EINVAL, "csc_authorization: no answer from API\n");
+        return (void *)1;
     }
+
+    json_object *login_json = json_tokener_parse(string.string);
+    bot_free(1, string.string);
 
     if(!json_object_get_boolean(json_object_object_get(login_json, "success"))) {
         const char *error = json_object_get_string(json_object_object_get(login_json, "error"));
 
         if(error)
-            bot_log(EINVAL, "Sankaku Channel Authorization: %s\n", error);
+            bot_log(EINVAL, "csc_authorization: %s\n", error);
         else
-            bot_log(EINVAL, "Sankaku Channel Authorization: unknown error\n");
+            bot_log(EINVAL, "csc_authorization: unknown error\n");
 
         json_object_put(login_json);
         return (void *)1;
     }
 
     snprintf(csc_authorization_header, sizeof(csc_authorization_header), "Authorization: Bearer %s", json_object_get_string(json_object_object_get(login_json, "access_token")));
-    bot_log(0, "Sankaku Channel Authorization: authorized successfully\n");
+    bot_log(0, "csc_authorization: authorized successfully\n");
 
     json_object_put(login_json);
     return 0;

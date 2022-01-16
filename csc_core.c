@@ -46,8 +46,10 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     curl_easy_cleanup(get_data);
     free(csc_url);
 
-    if(!string.string)
+    if(!string.string) {
+        bot_log(EINVAL, "csc_request: no answer from API\n");
         return 0;
+    }
 
     json_object *data = json_tokener_parse(string.string);
     free(string.string);
