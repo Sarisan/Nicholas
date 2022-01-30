@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
                 quiet = 1;
                 break;
             default:
-                return -EINVAL;
+                return EINVAL;
         }
     }
 
@@ -108,19 +108,19 @@ int main(int argc, char **argv) {
         return 0;
     } if(!api || (api && !api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
-        return -ENODATA;
+        return ENODATA;
     } if(!login || (login && !api[0])) {
         fprintf(stderr, "%s: Sankaku Channel login is not set\n", argv[0]);
-        return -ENODATA;
+        return ENODATA;
     } if(!password || (password && !password[0])) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
-        return -ENODATA;
+        return ENODATA;
     }
 
     if(bot_get_username())
-        return -EINVAL;
+        return EINVAL;
     if(csc_auth())
-        return -EINVAL;
+        return EINVAL;
 
     time_t csc_auth_time = time(0);
 
