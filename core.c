@@ -22,6 +22,7 @@ void signal_handler(int signal_int) {
 
 void *bot_parse(void *data) {
     struct bot_update result = *(struct bot_update *)data;
+    bot_log(0, "bot_parse: started parsing update %d\n", result.update_id);
 
     result.message_text = json_object_get_string(json_object_object_get(json_object_object_get(result.update, "message"), "text"));
     if(!result.message_text)
@@ -124,8 +125,6 @@ int main(int argc, char **argv) {
 
         if(result.update) {
             result.update_id = json_object_get_int(json_object_object_get(result.update, "update_id"));
-            bot_log(0, "core: received update %d\n", result.update_id);
-
             pthread_t thread = result.update_id;
             offset = result.update_id + 1;
 
