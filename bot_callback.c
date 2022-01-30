@@ -273,13 +273,13 @@ void bot_callback(struct bot_update *result) {
 
                 const char *csc_sample_url = json_object_get_string(json_object_object_get(csc_page, "sample_url"));
                 if(!csc_sample_url)
-                    csc_sample_url = CSC_PREVIEW;
+                    csc_sample_url = CSC_DPREVIEW_URL;
                 const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_page, "preview_url"));
                 if(!csc_preview_url)
-                    csc_preview_url = CSC_PREVIEW;
+                    csc_preview_url = CSC_DPREVIEW_URL;
                 const char *csc_file_url = json_object_get_string(json_object_object_get(csc_page, "file_url"));
                 if(!csc_file_url)
-                    csc_file_url = CSC_PREVIEW;
+                    csc_file_url = CSC_DPREVIEW_URL;
                 float csc_size = json_object_get_int(json_object_object_get(csc_page, "file_size"));
                 const char *csc_filetype = json_object_get_string(json_object_object_get(csc_page, "file_type"));
 
@@ -303,10 +303,10 @@ void bot_callback(struct bot_update *result) {
                     } else if(!strcmp(csc_filetype, "video/webm")) {
                         strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
                     } else {
-                        strntcpy(csc_image_url, CSC_PREVIEW, sizeof(csc_image_url));
+                        strntcpy(csc_image_url, CSC_DPREVIEW_URL, sizeof(csc_image_url));
                     }
                 } else {
-                    strntcpy(csc_image_url, CSC_PREVIEW, sizeof(csc_image_url));
+                    strntcpy(csc_image_url, CSC_DPREVIEW_URL, sizeof(csc_image_url));
                 }
 
                 char csc_book[1024];

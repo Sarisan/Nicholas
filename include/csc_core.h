@@ -4,7 +4,7 @@
 #define CSC_API_URL "https://capi-v2.sankakucomplex.com"
 #define CSC_POST_URL "https://beta.sankakucomplex.com/post/show"
 #define CSC_POOL_URL "https://beta.sankakucomplex.com/books"
-#define CSC_PREVIEW "https://s.sankakucomplex.com/download-preview.png"
+#define CSC_DPREVIEW_URL "https://s.sankakucomplex.com/download-preview.png"
 
 int csc_auth();
 
