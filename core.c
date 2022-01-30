@@ -54,15 +54,15 @@ int main(int argc, char **argv) {
     while(1) {
         static struct option long_options[] = {
             {"help", no_argument, 0, 'h'},
-            {"api", required_argument, 0, 0},
-            {"admin", required_argument, 0, 1},
-            {"login", required_argument, 0, 2},
-            {"password", required_argument, 0, 3},
+            {"api", required_argument, 0, 'a'},
+            {"admin", required_argument, 0, 'd'},
+            {"login", required_argument, 0, 'l'},
+            {"password", required_argument, 0, 'p'},
             {"offset", required_argument, 0, 'o'},
             {0, 0, 0, 0}
         };
 
-        int option = getopt_long(argc, argv, "ho:", long_options, 0);
+        int option = getopt_long(argc, argv, "ha:d:l:p:o:", long_options, 0);
         if(option == -1)
             break;
 
@@ -70,16 +70,16 @@ int main(int argc, char **argv) {
             case 'h':
                 print_help = 1;
                 break;
-            case 0:
+            case 'a':
                 api = optarg;
                 break;
-            case 1:
+            case 'd':
                 admin = optarg;
                 break;
-            case 2:
+            case 'l':
                 login = optarg;
                 break;
-            case 3:
+            case 'p':
                 password = optarg;
                 break;
             case 'o':
@@ -94,10 +94,10 @@ int main(int argc, char **argv) {
         printf("Nicholas Bot %s\n", BOT_VERSION);
         printf("Usage: %s [options]\n", argv[0]);
         printf("  -h, --help\t\tShow help information\n");
-        printf("      --api=<arg>\tTelegram Bot API server URL with token\n");
-        printf("      --admin=<arg>\tYour Telegram user ID\n");
-        printf("      --login=<arg>\tYour Sankaku Channel login\n");
-        printf("      --password=<arg>\tYour Sankaku Channel password\n");
+        printf("  -a, --api=<arg>\tTelegram Bot API server URL with token\n");
+        printf("  -d, --admin=<arg>\tYour Telegram user ID\n");
+        printf("  -l, --login=<arg>\tYour Sankaku Channel login\n");
+        printf("  -p, --password=<arg>\tYour Sankaku Channel password\n");
         printf("  -o, --offset=<arg>\tPrevious offset to continue the bot process\n");
         return 0;
     } if(!api || (api && !api[0])) {
