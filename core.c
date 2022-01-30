@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
-char *api, *admin, *login, *password;
-int global_signal;
+char *api = 0, *admin = 0, *login = 0, *password = 0;
+int global_signal = 0;
 
 void bot_commands(struct bot_update *result);
 void bot_inline(struct bot_update *result);
