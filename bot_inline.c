@@ -772,6 +772,55 @@ void bot_inline(struct bot_update *result) {
             json_object_object_add(csc_result, "description", json_object_new_string("You must specify an ID"));
         }
         json_object_array_add(csc_results, csc_result);
+    } else if(sscanf(result->inline_query, "%8s", query) == 1 && !strcmp(query, "short")) {
+        char arguments[20][1024];
+        int args = bot_command_getarg(result->inline_query, 20, 1024, arguments);
+
+        json_object *csc_result = json_object_new_object();
+
+        if(args) {
+            char short_query[1024] = "";
+
+            for(int arg = 0; arg < args; arg++) {
+                strntcat(short_query, arguments[arg], sizeof(short_query) - strlen(short_query));
+                if(arg < args - 1)
+                    strntcat(short_query, " ", sizeof(short_query) - strlen(short_query));
+            }
+
+            char message[2048];
+            snprintf(message, sizeof(message), "<b>Shortcut:</b> <code>%s</code>", short_query);
+
+            json_object *input_message_content = json_object_new_object();
+            json_object *button = json_object_new_object();
+            json_object *inline_keyboard = json_object_new_object();
+            json_object *inline_keyboard1 = json_object_new_array();
+            json_object *inline_keyboard2 = json_object_new_array();
+
+            json_object_object_add(csc_result, "type", json_object_new_string("article"));
+            json_object_object_add(csc_result, "id", json_object_new_int(1));
+            json_object_object_add(csc_result, "title", json_object_new_string("Shortcut"));
+            json_object_object_add(input_message_content, "message_text", json_object_new_string(message));
+            json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
+            json_object_object_add(csc_result, "input_message_content", input_message_content);
+            json_object_object_add(button, "text", json_object_new_string("Open inline mode"));
+            json_object_object_add(button, "switch_inline_query_current_chat", json_object_new_string(short_query));
+            json_object_array_add(inline_keyboard2, button);
+            json_object_array_add(inline_keyboard1, inline_keyboard2);
+            json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
+            json_object_object_add(csc_result, "reply_markup", inline_keyboard);
+            json_object_object_add(csc_result, "description", json_object_new_string(short_query));
+        } else {
+            json_object *input_message_content = json_object_new_object();
+
+            json_object_object_add(csc_result, "type", json_object_new_string("article"));
+            json_object_object_add(csc_result, "id", json_object_new_int(1));
+            json_object_object_add(csc_result, "title", json_object_new_string("No query specified"));
+            json_object_object_add(input_message_content, "message_text", json_object_new_string("<b>Error occurred, no query specified</b>"));
+            json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
+            json_object_object_add(csc_result, "input_message_content", input_message_content);
+            json_object_object_add(csc_result, "description", json_object_new_string("You must specify a query"));
+        }
+        json_object_array_add(csc_results, csc_result);
     } else {
         json_object *csc_result = json_object_new_object();
         json_object *input_message_content = json_object_new_object();

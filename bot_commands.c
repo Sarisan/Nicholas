@@ -2,6 +2,7 @@
 #include <csc_core.h>
 #include <curl/curl.h>
 #include <string.h>
+#include <string_ext.h>
 
 void bot_commands(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "start") || !bot_command_parse(result->message_text, "help")) {
@@ -19,7 +20,7 @@ void bot_commands(struct bot_update *result) {
             reply_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
 
         json_object_object_add(info, "chat_id", json_object_new_string(chat_id));
-        json_object_object_add(info, "text", json_object_new_string("I'm Nicholas, the first Fletcher-class ship to be launched... Here I can help you to search on Sankaku Channel via inline mode.\n\n<b>Search arguments</b>\nThe first argument is the page number, can be from 1 to 100.\n<code>b</code> - Switches search to book search\n<code>n</code> - Sub-argument of 'b', switches search by tags to search by name\n<code>t</code> - Switches search to tag search\n<code>p</code> - Replaces all animated content with its preview\n<code>a</code> - Enables auto-paging mode\n<code>q</code> - Adds quick access buttons: original, preview, information\nExample: <code>1bnpaq</code>\n\n<b>Commands</b>\n/help - Helpful information about me\n/original - Get original file of post by id\n/post - Get information about post by id\n/book - Get information about book by id\n/tag - Get information about tag by tag id or name"));
+        json_object_object_add(info, "text", json_object_new_string("I'm Nicholas, the first Fletcher-class ship to be launched... Here I can help you to search on Sankaku Channel via inline mode.\n\n<b>Search arguments</b>\nThe first argument is the page number, can be from 1 to 100.\n<code>b</code> - Switches search to book search\n<code>n</code> - Sub-argument of 'b', switches search by tags to search by name\n<code>t</code> - Switches search to tag search\n<code>p</code> - Replaces all animated content with its preview\n<code>a</code> - Enables auto-paging mode\n<code>q</code> - Adds quick access buttons: original, preview, information\nExample: <code>1bnpaq</code>\n\n<b>Commands</b>\n/help - Helpful information about me\n/original - Get original file of post by id\n/post - Get information about post by id\n/book - Get information about book by id\n/tag - Get information about tag by tag id or name\n/short - Create inline mode shortcut"));
         json_object_object_add(info, "parse_mode", json_object_new_string("HTML"));
         json_object_object_add(info, "reply_to_message_id", json_object_new_int(reply_id));
         json_object_object_add(button, "text", json_object_new_string("Search posts"));
@@ -326,5 +327,54 @@ void bot_commands(struct bot_update *result) {
             bot_post("sendMessage", tag);
             json_object_put(tag);
         }
+    } else if(!bot_command_parse(result->message_text, "short")) {
+        const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
+        int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
+
+        char arguments[20][1024];
+        int args = bot_command_getarg(result->message_text, 20, 1024, arguments);
+
+        json_object *shortcut = json_object_new_object();
+
+        if(args) {
+            char short_query[1024] = "";
+
+            for(int arg = 0; arg < args; arg++) {
+                strntcat(short_query, arguments[arg], sizeof(short_query) - strlen(short_query));
+                if(arg < args - 1)
+                    strntcat(short_query, " ", sizeof(short_query) - strlen(short_query));
+            }
+
+            char message[2048];
+            snprintf(message, sizeof(message), "<b>Shortcut:</b> <code>%s</code>", short_query);
+
+            json_object *button = json_object_new_object();
+            json_object *inline_keyboard = json_object_new_object();
+            json_object *inline_keyboard1 = json_object_new_array();
+            json_object *inline_keyboard2 = json_object_new_array();
+
+            int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message"), "message_id"));
+            if(!reply_id)
+                reply_id = message_id;
+
+            json_object_object_add(shortcut, "chat_id", json_object_new_string(chat_id));
+            json_object_object_add(shortcut, "text", json_object_new_string(message));
+            json_object_object_add(shortcut, "parse_mode", json_object_new_string("HTML"));
+            json_object_object_add(shortcut, "reply_to_message_id", json_object_new_int(reply_id));
+            json_object_object_add(button, "text", json_object_new_string("Open inline mode"));
+            json_object_object_add(button, "switch_inline_query_current_chat", json_object_new_string(short_query));
+            json_object_array_add(inline_keyboard2, button);
+            json_object_array_add(inline_keyboard1, inline_keyboard2);
+            json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
+            json_object_object_add(shortcut, "reply_markup", inline_keyboard);
+        } else {
+            json_object_object_add(shortcut, "chat_id", json_object_new_string(chat_id));
+            json_object_object_add(shortcut, "text", json_object_new_string("<b>You must specify a query</b>"));
+            json_object_object_add(shortcut, "parse_mode", json_object_new_string("HTML"));
+            json_object_object_add(shortcut, "reply_to_message_id", json_object_new_int(message_id));
+        }
+
+        bot_post("sendMessage", shortcut);
+        json_object_put(shortcut);
     }
 }
