@@ -16,17 +16,17 @@ void bot_log(int error, const char *format, ...) {
     time_t current_time = time(0);
     struct tm *date = localtime(&current_time);
 
-    char log[32];
-    strftime(log, sizeof(log), "%d.%m %T", date);
+    char date_string[32];
+    strftime(date_string, sizeof(date_string), "%Y-%m-%d %T", date);
 
     va_list args;
     va_start(args, format);
 
     if(error) {
-        fprintf(stderr, "[%s] [%d] ", log, error);
+        fprintf(stderr, "[%s] [%d] ", date_string, error);
         vfprintf(stderr, format, args);
     } else {
-        printf("[%s] ", log);
+        printf("[%s] ", date_string);
         vprintf(format, args);
     }
 
