@@ -223,8 +223,8 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
         }
     }
 
-    char command[128], first_argument[20480];
-    int init = sscanf(input, "/%97s %20479s", command, first_argument);
+    char command[20480], first_argument[20480];
+    int init = sscanf(input, "%20479s %20479s", command, first_argument);
 
     if(init < 1) {
         bot_log(EBADR, "bot_command_getarg: not a command\n");
@@ -234,7 +234,7 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
     int count = 0;
 
     if(init == 2) {
-        strntcpy(arguments, &arguments[strlen(command) + 2], sizeof(arguments));
+        strntcpy(arguments, &arguments[strlen(command) + 1], sizeof(arguments));
 
         while(count < max_args) {
             char argument[20480];
