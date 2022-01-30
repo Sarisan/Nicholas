@@ -3,6 +3,7 @@
 
 #define CSC_POST_URL "https://beta.sankakucomplex.com/post/show"
 #define CSC_POOL_URL "https://beta.sankakucomplex.com/books"
+#define CSC_PREVIEW "https://s.sankakucomplex.com/download-preview.png"
 
 int csc_auth();
 

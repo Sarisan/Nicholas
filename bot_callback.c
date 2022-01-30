@@ -271,37 +271,46 @@ void bot_callback(struct bot_update *result) {
                 short pages_array = data > 1 ? offset - 20 * (data - 1) : offset;
                 json_object *csc_page = json_object_array_get_idx(csc_data, pages_array);
 
+                const char *csc_sample_url = json_object_get_string(json_object_object_get(csc_page, "sample_url"));
+                if(!csc_sample_url)
+                    csc_sample_url = CSC_PREVIEW;
+                const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_page, "preview_url"));
+                if(!csc_preview_url)
+                    csc_preview_url = CSC_PREVIEW;
+                const char *csc_file_url = json_object_get_string(json_object_object_get(csc_page, "file_url"));
+                if(!csc_file_url)
+                    csc_file_url = CSC_PREVIEW;
                 float csc_size = json_object_get_int(json_object_object_get(csc_page, "file_size"));
                 const char *csc_filetype = json_object_get_string(json_object_object_get(csc_page, "file_type"));
 
-                char csc_sample_url[512];
+                char csc_image_url[512];
 
                 if(csc_filetype) {
                     if(!strcmp(csc_filetype, "image/jpeg")) {
-                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                        strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
                     } else if(!strcmp(csc_filetype, "image/png")) {
-                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                        strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
                     } else if(!strcmp(csc_filetype, "image/gif")) {
                         if(csc_size <= 20971520)
-                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_image_url, csc_file_url, sizeof(csc_image_url));
                         else
-                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
                     } else if(!strcmp(csc_filetype, "video/mp4")) {
                         if(csc_size <= 20971520)
-                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_image_url, csc_file_url, sizeof(csc_image_url));
                         else
-                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
                     } else if(!strcmp(csc_filetype, "video/webm")) {
-                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                        strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
                     } else {
-                        strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+                        strntcpy(csc_image_url, CSC_PREVIEW, sizeof(csc_image_url));
                     }
                 } else {
-                    strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+                    strntcpy(csc_image_url, CSC_PREVIEW, sizeof(csc_image_url));
                 }
 
                 char csc_book[1024];
-                snprintf(csc_book, sizeof(csc_book), "<a href=\"%s\">&#8203;</a><b>Page:</b> %d / %d\n<b>ID:</b> <code>%d</code>", csc_sample_url, offset + 1, data1 + 1, csc_id);
+                snprintf(csc_book, sizeof(csc_book), "<a href=\"%s\">&#8203;</a><b>Page:</b> %d / %d\n<b>ID:</b> <code>%d</code>", csc_image_url, offset + 1, data1 + 1, csc_id);
 
                 char callback_data[32];
                 snprintf(callback_data, sizeof(callback_data), "4_%d", id);
