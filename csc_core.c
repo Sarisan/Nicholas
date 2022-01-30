@@ -4,6 +4,7 @@
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string_ext.h>
 
 #define CSC_API_URL "https://capi-v2.sankakucomplex.com"
 
@@ -16,7 +17,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     va_end(args);
 
-    size_t length = bot_strlen(CSC_API_URL) + bot_strlen(api_data_args) + 2;
+    size_t length = strlen(CSC_API_URL) + strlen(api_data_args) + 2;
     char *csc_url = malloc(sizeof(char) * length);
     if(!csc_url)
         return 0;
@@ -69,11 +70,11 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
 
     char *csc_rating_s;
     
-    if(!bot_strcmp(csc_rating, "s"))
+    if(!strcmp(csc_rating, "s"))
         csc_rating_s = "safe";
-    else if(!bot_strcmp(csc_rating, "q"))
+    else if(!strcmp(csc_rating, "q"))
         csc_rating_s = "questionable";
-    else if(!bot_strcmp(csc_rating, "e"))
+    else if(!strcmp(csc_rating, "e"))
         csc_rating_s = "explicit";
     else
         csc_rating_s = "unknown";
@@ -90,34 +91,34 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     char *csc_format, csc_sample_url[512];
 
     if(csc_filetype) {
-        if(!bot_strcmp(csc_filetype, "image/jpeg")) {
+        if(!strcmp(csc_filetype, "image/jpeg")) {
             csc_format = "JPEG";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "image/png")) {
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "image/png")) {
             csc_format = "PNG";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "image/gif")) {
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "sample_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "image/gif")) {
             csc_format = "GIF";
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "video/mp4")) {
             csc_format = "MP4";
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "video/webm")) {
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "video/webm")) {
             csc_format = "WEBM";
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_data, "preview_url")), sizeof(csc_sample_url));
         } else {
             csc_format = "unknown";
-            bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+            strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
         }
     } else {
         csc_format = "SWF";
-        bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+        strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
     }
 
     char *csc_has_children_s;
@@ -132,7 +133,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     if(csc_parent_id)
         snprintf(csc_parent_id_s, sizeof(csc_parent_id_s), "<code>%s</code>", csc_parent_id);
     else
-        bot_strncpy(csc_parent_id_s, "none", sizeof(csc_parent_id_s));
+        strntcpy(csc_parent_id_s, "none", sizeof(csc_parent_id_s));
 
     if(csc_vote_average != (float)csc_vote_average)
         csc_vote_average = 0;
@@ -143,9 +144,9 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
         if(csc_source[0])
             snprintf(csc_source_s, sizeof(csc_source_s), "%s", csc_source);
         else
-            bot_strncpy(csc_source_s, "none", sizeof(csc_source_s));
+            strntcpy(csc_source_s, "none", sizeof(csc_source_s));
     } else {
-        bot_strncpy(csc_source_s, "none", sizeof(csc_source_s));
+        strntcpy(csc_source_s, "none", sizeof(csc_source_s));
     }
 
     char csc_date[16];
@@ -176,16 +177,16 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
         snprintf(csc_description_s, sizeof(csc_description_s), "<code>%s</code>", csc_description_encoded);
         bot_free(1, csc_description_encoded);
     } else {
-        bot_strncpy(csc_description_s, "none", sizeof(csc_description));
+        strntcpy(csc_description_s, "none", sizeof(csc_description));
     }
 
     char *csc_rating_s;
 
-    if(!bot_strcmp(csc_rating, "s"))
+    if(!strcmp(csc_rating, "s"))
         csc_rating_s = "safe";
-    else if(!bot_strcmp(csc_rating, "q"))
+    else if(!strcmp(csc_rating, "q"))
         csc_rating_s = "questionable";
-    else if(!bot_strcmp(csc_rating, "e"))
+    else if(!strcmp(csc_rating, "e"))
         csc_rating_s = "explicit";
     else
         csc_rating_s = "unknown";
@@ -193,27 +194,27 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
     char csc_sample_url[512];
 
     if(csc_filetype) {
-        if(!bot_strcmp(csc_filetype, "image/jpeg")) {
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "sample_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "image/png")) {
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "sample_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "image/gif")) {
+        if(!strcmp(csc_filetype, "image/jpeg")) {
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "sample_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "image/png")) {
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "sample_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "image/gif")) {
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "file_url")), sizeof(csc_sample_url));
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "video/mp4")) {
             if(csc_size <= 20971520)
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "file_url")), sizeof(csc_sample_url));
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "file_url")), sizeof(csc_sample_url));
             else
-                bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
-        } else if(!bot_strcmp(csc_filetype, "video/webm")) {
-            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
+                strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
+        } else if(!strcmp(csc_filetype, "video/webm")) {
+            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(cover_post, "preview_url")), sizeof(csc_sample_url));
         } else {
-            bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+            strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
         }
     } else {
-        bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+        strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
     }
 
     if(csc_vote_average != (float)csc_vote_average)
@@ -236,7 +237,7 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
         snprintf(csc_name_en_s, sizeof(csc_name_en_s), "<code>%s</code>", csc_name_en_encoded);
         bot_free(1, csc_name_en_encoded);
     } else {
-        bot_strncpy(csc_name_en_s, "none", sizeof(csc_name_en_s));
+        strntcpy(csc_name_en_s, "none", sizeof(csc_name_en_s));
     }
 
     char csc_name_ja_s[6144];
@@ -246,17 +247,17 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
         snprintf(csc_name_ja_s, sizeof(csc_name_ja_s), "<code>%s</code>", csc_name_ja_encoded);
         bot_free(1, csc_name_ja_encoded);
     } else {
-        bot_strncpy(csc_name_ja_s, "none", sizeof(csc_name_ja_s));
+        strntcpy(csc_name_ja_s, "none", sizeof(csc_name_ja_s));
     }
 
     char *csc_rating_s;
 
     if(csc_rating) {
-        if(!bot_strcmp(csc_rating, "s"))
+        if(!strcmp(csc_rating, "s"))
             csc_rating_s = "safe";
-        else if(!bot_strcmp(csc_rating, "q"))
+        else if(!strcmp(csc_rating, "q"))
             csc_rating_s = "questionable";
-        else if(!bot_strcmp(csc_rating, "e"))
+        else if(!strcmp(csc_rating, "e"))
             csc_rating_s = "explicit";
         else
             csc_rating_s = "unknown";

@@ -2,6 +2,7 @@
 #include <csc_core.h>
 #include <stdio.h>
 #include <string.h>
+#include <string_ext.h>
 
 void bot_callback(struct bot_update *result) {
     short action = 0;
@@ -46,31 +47,31 @@ void bot_callback(struct bot_update *result) {
 
                     switch(json_object_get_int(json_object_object_get(json_object_array_get_idx(csc_tags_array, tags_array), "type"))) {
                         case 3:
-                            bot_strncat(csc_copyright, tag, sizeof(csc_copyright) - bot_strlen(csc_copyright));
+                            strntcat(csc_copyright, tag, sizeof(csc_copyright) - strlen(csc_copyright));
                             break;
                         case 2:
-                            bot_strncat(csc_studio, tag, sizeof(csc_studio) - bot_strlen(csc_studio));
+                            strntcat(csc_studio, tag, sizeof(csc_studio) - strlen(csc_studio));
                             break;
                         case 4:
-                            bot_strncat(csc_character, tag, sizeof(csc_character) - bot_strlen(csc_character));
+                            strntcat(csc_character, tag, sizeof(csc_character) - strlen(csc_character));
                             break;
                         case 1:
-                            bot_strncat(csc_artist, tag, sizeof(csc_artist) - bot_strlen(csc_artist));
+                            strntcat(csc_artist, tag, sizeof(csc_artist) - strlen(csc_artist));
                             break;
                         case 8:
-                            bot_strncat(csc_medium, tag, sizeof(csc_medium) - bot_strlen(csc_medium));
+                            strntcat(csc_medium, tag, sizeof(csc_medium) - strlen(csc_medium));
                             break;
                         case 0:
-                            bot_strncat(csc_general, tag, sizeof(csc_general) - bot_strlen(csc_general));
+                            strntcat(csc_general, tag, sizeof(csc_general) - strlen(csc_general));
                             break;
                         case 9:
-                            bot_strncat(csc_meta, tag, sizeof(csc_meta) - bot_strlen(csc_meta));
+                            strntcat(csc_meta, tag, sizeof(csc_meta) - strlen(csc_meta));
                             break;
                         case 5:
-                            bot_strncat(csc_genre, tag, sizeof(csc_genre) - bot_strlen(csc_genre));
+                            strntcat(csc_genre, tag, sizeof(csc_genre) - strlen(csc_genre));
                             break;
                         default:
-                            bot_strncat(csc_unknown, tag, sizeof(csc_unknown) - bot_strlen(csc_unknown));
+                            strntcat(csc_unknown, tag, sizeof(csc_unknown) - strlen(csc_unknown));
                             break;
                     }
                 }
@@ -276,27 +277,27 @@ void bot_callback(struct bot_update *result) {
                 char csc_sample_url[512];
 
                 if(csc_filetype) {
-                    if(!bot_strcmp(csc_filetype, "image/jpeg")) {
-                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
-                    } else if(!bot_strcmp(csc_filetype, "image/png")) {
-                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
-                    } else if(!bot_strcmp(csc_filetype, "image/gif")) {
+                    if(!strcmp(csc_filetype, "image/jpeg")) {
+                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                    } else if(!strcmp(csc_filetype, "image/png")) {
+                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "sample_url")), sizeof(csc_sample_url));
+                    } else if(!strcmp(csc_filetype, "image/gif")) {
                         if(csc_size <= 20971520)
-                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
                         else
-                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
-                    } else if(!bot_strcmp(csc_filetype, "video/mp4")) {
+                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                    } else if(!strcmp(csc_filetype, "video/mp4")) {
                         if(csc_size <= 20971520)
-                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "file_url")), sizeof(csc_sample_url));
                         else
-                            bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
-                    } else if(!bot_strcmp(csc_filetype, "video/webm")) {
-                        bot_strncpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                            strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
+                    } else if(!strcmp(csc_filetype, "video/webm")) {
+                        strntcpy(csc_sample_url, json_object_get_string(json_object_object_get(csc_page, "preview_url")), sizeof(csc_sample_url));
                     } else {
-                        bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+                        strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                     }
                 } else {
-                    bot_strncpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
+                    strntcpy(csc_sample_url, "https://s.sankakucomplex.com/download-preview.png", sizeof(csc_sample_url));
                 }
 
                 char csc_book[1024];

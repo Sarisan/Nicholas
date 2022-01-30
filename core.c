@@ -37,7 +37,7 @@ void *bot_parse(void *data) {
     if(result.callback_data)
         bot_callback(&result);
 
-    if(result.message_text && admin && !bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
+    if(result.message_text && admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
         bot_commands_private(&result);
 
     json_object_put(result.update);

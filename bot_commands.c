@@ -48,7 +48,7 @@ void bot_commands(struct bot_update *result) {
             json_object *reply_to_message = json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message");
             if(json_object_get_string(json_object_object_get(reply_to_message, "caption"))
               && json_object_get_boolean(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "is_bot"))
-              && !bot_strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username)
+              && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(reply_to_message, "via_bot"), "username")), bot_username)
               && sscanf(json_object_get_string(json_object_object_get(reply_to_message, "caption")), "ID: %15s", arguments[0]) == 1) {
                 args = 1;
             } else {
@@ -93,7 +93,7 @@ void bot_commands(struct bot_update *result) {
                     int csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
                     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
 
-                    if(csc_filetype && bot_strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
+                    if(csc_filetype && strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
                         json_object_object_add(info, "document", json_object_new_string(document));
                         json_object_object_add(info, "reply_to_message_id", json_object_new_int(reply_id));
                     } else {
@@ -186,7 +186,7 @@ void bot_commands(struct bot_update *result) {
 
                 char error_description[256];
 
-                if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found")) {
+                if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
                     if(bot_command_parse(result->message_text, "book"))
                         snprintf(error_description, sizeof(error_description), "<b>Wrong post ID:</b> <code>%s</code>", arguments[arg]);
                     else
@@ -310,7 +310,7 @@ void bot_commands(struct bot_update *result) {
 
                 char error_description[1024];
 
-                if(error_code && !bot_strcmp(error_code, "snackbar__server-error_not-found"))
+                if(error_code && !strcmp(error_code, "snackbar__server-error_not-found"))
                     snprintf(error_description, sizeof(error_description), "<b>Wrong tag ID or name:</b> <code>%s</code>", arguments[arg]);
                 else if(error_code)
                     snprintf(error_description, sizeof(error_description), "<b>Error:</b> %s", error_code);

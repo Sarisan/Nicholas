@@ -3,6 +3,7 @@
 #include <json-c/json_tokener.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string_ext.h>
 
 struct bot_curl_string {
     char *string;
@@ -41,7 +42,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
     if(!string->string)
         return 0;
 
-    bot_memcpy(&string->string[string->length], data, realsize);
+    memcpy(&string->string[string->length], data, realsize);
     string->length += realsize;
     string->string[string->length] = 0;
     
@@ -49,7 +50,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 }
 
 json_object *bot_get(const char *method, json_object *json) {
-    size_t length = bot_strlen(api) + bot_strlen(method) + 2;
+    size_t length = strlen(api) + strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
     if(!method_url)
@@ -89,7 +90,7 @@ json_object *bot_get(const char *method, json_object *json) {
 }
 
 int bot_post(const char *method, json_object *json) {
-    size_t length = bot_strlen(api) + bot_strlen(method) + 2;
+    size_t length = strlen(api) + strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
     if(!method_url)
@@ -156,7 +157,7 @@ int bot_get_username() {
             return -EINVAL;
         }
 
-        bot_strncpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
+        strntcpy(bot_username, json_object_get_string(json_object_object_get(json_object_object_get(bot_json, "result"), "username")), sizeof(bot_username));
         bot_log(0, "bot_get_username: @%s\n", bot_username);
     } else {
         bot_log(EINVAL, "bot_get_username: unable to get username\n");
@@ -195,10 +196,10 @@ int bot_command_parse(const char *input, const char *command_text) {
     char command_from_input[128];
 
     if(sscanf(input, "/%97s", command_from_input)) {
-        if(bot_strcmp(command_from_input, command_text)) {
+        if(strcmp(command_from_input, command_text)) {
             char command[128];
             snprintf(command, sizeof(command), "%s@%s", command_text, bot_username);
-            if(bot_strcmp(command_from_input, command))
+            if(strcmp(command_from_input, command))
                 return -EINVAL;
         }
     } else {
@@ -210,11 +211,11 @@ int bot_command_parse(const char *input, const char *command_text) {
 
 int bot_command_getarg(const char *input, size_t max_args, size_t max_length, char array[max_args][max_length]) {
     char arguments[20480];
-    bot_strncpy(arguments, input, sizeof(arguments));
+    strntcpy(arguments, input, sizeof(arguments));
 
     for(short s = 0; arguments[s]; s++) {
         if(arguments[s] == ' ' && arguments[s + 1] == ' ') {
-            bot_strncpy(&arguments[s], &arguments[s + 1], sizeof(arguments) - s);
+            strntcpy(&arguments[s], &arguments[s + 1], sizeof(arguments) - s);
             s--;
         }
     }
@@ -230,14 +231,14 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
     int count = 0;
 
     if(init == 2) {
-        bot_strncpy(arguments, &arguments[bot_strlen(command) + 2], sizeof(arguments));
+        strntcpy(arguments, &arguments[strlen(command) + 2], sizeof(arguments));
 
         while(count < max_args) {
             char argument[20480];
             int args = sscanf(arguments, "%20479s %20479s", argument, first_argument);
 
             if(args >= 1) {
-                bot_strncpy(array[count], argument, max_length);
+                strntcpy(array[count], argument, max_length);
                 count++;
             }
 
@@ -245,7 +246,7 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
                 break;
 
             if(args == 2)
-                bot_strncpy(arguments, &arguments[bot_strlen(argument) + 1], sizeof(arguments));
+                strntcpy(arguments, &arguments[strlen(argument) + 1], sizeof(arguments));
         }
     }
 
