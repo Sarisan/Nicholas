@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 char *api = 0, *admin = 0, *login = 0, *password = 0;
@@ -48,7 +49,7 @@ void *bot_parse(void *data) {
 int main(int argc, char **argv) {
     signal(SIGINT, signal_handler);
 
-    int print_help = 0;
+    int print_help = 0, offset = -1;;
 
     while(1) {
         static struct option long_options[] = {
@@ -57,10 +58,11 @@ int main(int argc, char **argv) {
             {"admin", required_argument, 0, 1},
             {"login", required_argument, 0, 2},
             {"password", required_argument, 0, 3},
+            {"offset", required_argument, 0, 'o'},
             {0, 0, 0, 0}
         };
 
-        int option = getopt_long(argc, argv, "h", long_options, 0);
+        int option = getopt_long(argc, argv, "ho:", long_options, 0);
         if(option == -1)
             break;
 
@@ -80,6 +82,9 @@ int main(int argc, char **argv) {
             case 3:
                 password = optarg;
                 break;
+            case 'o':
+                offset = atoi(optarg);
+                break;
             default:
                 return -EINVAL;
         }
@@ -93,6 +98,7 @@ int main(int argc, char **argv) {
         printf("      --admin=<arg>\tYour Telegram user ID\n");
         printf("      --login=<arg>\tYour Sankaku Channel login\n");
         printf("      --password=<arg>\tYour Sankaku Channel password\n");
+        printf("  -o, --offset=<arg>\tPrevious offset to continue the bot process\n");
         return 0;
     } if(!api || (api && !api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
@@ -110,7 +116,6 @@ int main(int argc, char **argv) {
     if(csc_auth())
         return -EINVAL;
 
-    int offset = -1;
     time_t csc_auth_time = time(0);
 
     while(offset) {
