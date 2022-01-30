@@ -9,7 +9,7 @@
 #include <string.h>
 
 char *api = 0, *admin = 0, *login = 0, *password = 0;
-int global_signal = 0;
+int global_signal = 0, quiet = 0;
 
 void bot_commands(struct bot_update *result);
 void bot_inline(struct bot_update *result);
@@ -60,10 +60,11 @@ int main(int argc, char **argv) {
             {"login", required_argument, 0, 'l'},
             {"password", required_argument, 0, 'p'},
             {"offset", required_argument, 0, 'o'},
+            {"quiet", no_argument, 0, 'q'},
             {0, 0, 0, 0}
         };
 
-        int option = getopt_long(argc, argv, "ha:d:l:p:o:", long_options, 0);
+        int option = getopt_long(argc, argv, "ha:d:l:p:o:q", long_options, 0);
         if(option == -1)
             break;
 
@@ -86,6 +87,9 @@ int main(int argc, char **argv) {
             case 'o':
                 offset = atoi(optarg);
                 break;
+            case 'q':
+                quiet = 1;
+                break;
             default:
                 return -EINVAL;
         }
@@ -100,6 +104,7 @@ int main(int argc, char **argv) {
         printf("  -l, --login=<arg>\tYour Sankaku Channel login\n");
         printf("  -p, --password=<arg>\tYour Sankaku Channel password\n");
         printf("  -o, --offset=<arg>\tPrevious offset to continue the bot process\n");
+        printf("  -q, --quiet\t\tDisable logs\n");
         return 0;
     } if(!api || (api && !api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);

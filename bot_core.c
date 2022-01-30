@@ -11,27 +11,30 @@ struct bot_curl_string {
 };
 
 extern char *api;
+extern int quiet;
 char bot_username[64];
 
 void bot_log(int error, const char *format, ...) {
-    time_t current_time = time(0);
-    struct tm *date = localtime(&current_time);
+    if(!quiet) {
+        time_t current_time = time(0);
+        struct tm *date = localtime(&current_time);
 
-    char date_string[32];
-    strftime(date_string, sizeof(date_string), "%Y-%m-%d %T", date);
+        char date_string[32];
+        strftime(date_string, sizeof(date_string), "%Y-%m-%d %T", date);
 
-    va_list args;
-    va_start(args, format);
+        va_list args;
+        va_start(args, format);
 
-    if(error) {
-        fprintf(stderr, "[%s] [%d] ", date_string, error);
-        vfprintf(stderr, format, args);
-    } else {
-        printf("[%s] ", date_string);
-        vprintf(format, args);
+        if(error) {
+            fprintf(stderr, "[%s] [%d] ", date_string, error);
+            vfprintf(stderr, format, args);
+        } else {
+            printf("[%s] ", date_string);
+            vprintf(format, args);
+        }
+
+        va_end(args);
     }
-
-    va_end(args);
 }
 
 size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_curl_string *string) {
