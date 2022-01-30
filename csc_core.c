@@ -7,8 +7,6 @@
 #include <string.h>
 #include <string_ext.h>
 
-#define CSC_API_URL "https://capi-v2.sankakucomplex.com"
-
 json_object *csc_request(long timeout, const char *api_data, ...) {
     va_list args;
     va_start(args, api_data);
