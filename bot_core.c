@@ -38,10 +38,8 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 
     string->string = realloc(string->string, string->length + realsize + 1);
 
-    if(!string->string) {
-        bot_log(ENOMEM, "bot_curl_writefunction: failed to reallocate memory\n");
+    if(!string->string)
         return 0;
-    }
 
     bot_memcpy(&string->string[string->length], data, realsize);
     string->length += realsize;
@@ -54,10 +52,8 @@ json_object *bot_get(const char *method, json_object *json) {
     size_t length = bot_strlen(api) + bot_strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
-    if(!method_url) {
-        bot_log(ENOMEM, "bot_get: failed to allocate memory\n");
+    if(!method_url)
         return 0;
-    }
 
     snprintf(method_url, length, "%s/%s", api, method);
 
@@ -96,10 +92,8 @@ int bot_post(const char *method, json_object *json) {
     size_t length = bot_strlen(api) + bot_strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
-    if(!method_url) {
-        bot_log(ENOMEM, "bot_post: failed to allocate memory\n");
+    if(!method_url)
         return -ENOMEM;
-    }
 
     snprintf(method_url, length, "%s/%s", api, method);
 
