@@ -1,7 +1,7 @@
 #include <json-c/json_object.h>
 #include <stddef.h>
 
-#define BOT_VERSION "3.2.3"
+#define BOT_VERSION "4.0-rc1"
 
 struct bot_curl_string {
     char *string;
