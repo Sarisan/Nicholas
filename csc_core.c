@@ -59,14 +59,8 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
     char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(csc_data, "author"), "name")), 256);
     const char *csc_sample_url = json_object_get_string(json_object_object_get(csc_data, "sample_url"));
-    if(!csc_sample_url)
-        csc_sample_url = CSC_DPREVIEW_URL;
     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
-    if(!csc_preview_url)
-        csc_preview_url = CSC_DPREVIEW_URL;
     const char *csc_file_url = json_object_get_string(json_object_object_get(csc_data, "file_url"));
-    if(!csc_file_url)
-        csc_file_url = CSC_DPREVIEW_URL;
     float csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
     time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(csc_data, "created_at"), "s"));
@@ -101,25 +95,25 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     if(csc_filetype) {
         if(!strcmp(csc_filetype, "image/jpeg")) {
             csc_format = "JPEG";
-            strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_sample_url ? csc_sample_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "image/png")) {
             csc_format = "PNG";
-            strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_sample_url ? csc_sample_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "image/gif")) {
             csc_format = "GIF";
             if(csc_size <= 20971520)
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_file_url ? csc_file_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
             else
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "video/mp4")) {
             csc_format = "MP4";
             if(csc_size <= 20971520)
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_file_url ? csc_file_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
             else
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "video/webm")) {
             csc_format = "WEBM";
-            strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else {
             csc_format = "unknown";
             strntcpy(csc_image_url, CSC_DPREVIEW_URL, sizeof(csc_image_url));
@@ -175,14 +169,8 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
     float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
     json_object *cover_post = json_object_object_get(csc_data, "cover_post");
     const char *csc_sample_url = json_object_get_string(json_object_object_get(cover_post, "sample_url"));
-    if(!csc_sample_url)
-        csc_sample_url = CSC_DPREVIEW_URL;
     const char *csc_preview_url = json_object_get_string(json_object_object_get(cover_post, "preview_url"));
-    if(!csc_preview_url)
-        csc_preview_url = CSC_DPREVIEW_URL;
     const char *csc_file_url = json_object_get_string(json_object_object_get(cover_post, "file_url"));
-    if(!csc_file_url)
-        csc_file_url = CSC_DPREVIEW_URL;
     float csc_size = json_object_get_int(json_object_object_get(cover_post, "file_size"));
     const char *csc_filetype = json_object_get_string(json_object_object_get(cover_post, "file_type"));
     char *csc_name = bot_strenc(json_object_get_string(json_object_object_get(csc_data, "name")), 1024);
@@ -212,21 +200,21 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
 
     if(csc_filetype) {
         if(!strcmp(csc_filetype, "image/jpeg")) {
-            strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_sample_url ? csc_sample_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "image/png")) {
-            strntcpy(csc_image_url, csc_sample_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_sample_url ? csc_sample_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "image/gif")) {
             if(csc_size <= 20971520)
-                strntcpy(csc_image_url, csc_file_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_file_url ? csc_file_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
             else
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "video/mp4")) {
             if(csc_size <= 20971520)
-                strntcpy(csc_image_url, csc_file_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_file_url ? csc_file_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
             else
-                strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+                strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else if(!strcmp(csc_filetype, "video/webm")) {
-            strntcpy(csc_image_url, csc_preview_url, sizeof(csc_image_url));
+            strntcpy(csc_image_url, csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL, sizeof(csc_image_url));
         } else {
             strntcpy(csc_image_url, CSC_DPREVIEW_URL, sizeof(csc_image_url));
         }
