@@ -559,12 +559,12 @@ void bot_inline(struct bot_update *result) {
 
         json_object_put(data);
     } else if(sscanf(result->inline_query, "%8s", query) == 1 && (!strcmp(query, "original") || !strcmp(query, "post") || !strcmp(query, "book"))) {
-        char argument[16] = "";
-        sscanf(result->inline_query, "%8s %15s", query, argument);
+        char argument[1][16];
+        int args = bot_command_getarg(result->inline_query, 1, 16, argument);
 
         json_object *csc_result = json_object_new_object();
 
-        if(argument[0]) {
+        if(args) {
             json_object *csc_data;
 
             if(strcmp(query, "book"))
