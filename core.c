@@ -22,7 +22,6 @@ void signal_handler(int signal_int) {
 
 void *bot_parse(void *data) {
     struct bot_update result = *(struct bot_update *)data;
-    bot_log(0, "bot_parse: started parsing update %d\n", result.update_id);
 
     result.message_text = json_object_get_string(json_object_object_get(json_object_object_get(result.update, "message"), "text"));
     if(!result.message_text)
@@ -30,17 +29,23 @@ void *bot_parse(void *data) {
     result.inline_query = json_object_get_string(json_object_object_get(json_object_object_get(result.update, "inline_query"), "query"));
     result.callback_data = json_object_get_string(json_object_object_get(json_object_object_get(result.update, "callback_query"), "data"));
 
-    if(result.message_text)
+    if(result.message_text) {
+        bot_log(0, "bot_parse: %d: message_text: %s\n", result.update_id, result.message_text[0] ? result.message_text : "empty");
         bot_commands(&result);
 
-    if(result.inline_query)
+        if(admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
+            bot_commands_private(&result);
+    }
+
+    if(result.inline_query) {
+        bot_log(0, "bot_parse: %d: inline_query: %s\n", result.update_id, result.inline_query[0] ? result.inline_query : "empty");
         bot_inline(&result);
+    }
 
-    if(result.callback_data)
+    if(result.callback_data) {
+        bot_log(0, "bot_parse: %d: callback_data: %s\n", result.update_id, result.callback_data[0] ? result.callback_data : "empty");
         bot_callback(&result);
-
-    if(result.message_text && admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
-        bot_commands_private(&result);
+    }
 
     json_object_put(result.update);
 
