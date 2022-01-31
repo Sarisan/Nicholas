@@ -165,6 +165,7 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
     const char *csc_description = json_object_get_string(json_object_object_get(csc_data, "description"));
     char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(csc_data, "author"), "name")), 256);
     const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
+    const char *csc_parent_id = json_object_get_string(json_object_object_get(csc_data, "parent_id"));
     float csc_vote_count = json_object_get_int(json_object_object_get(csc_data, "vote_count"));
     float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
     json_object *cover_post = json_object_object_get(csc_data, "cover_post");
@@ -185,6 +186,13 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
         strntcpy(csc_description_s, "none", sizeof(csc_description));
     }
 
+    char *csc_is_active_s;
+
+    if(json_object_get_boolean(json_object_object_get(csc_data, "is_active")))
+        csc_is_active_s = "yes";
+    else
+        csc_is_active_s = "no";
+
     char *csc_rating_s;
 
     if(!strcmp(csc_rating, "s"))
@@ -195,6 +203,20 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
         csc_rating_s = "explicit";
     else
         csc_rating_s = "unknown";
+
+    char csc_parent_id_s[32];
+
+    if(csc_parent_id)
+        snprintf(csc_parent_id_s, sizeof(csc_parent_id_s), "<code>%s</code>", csc_parent_id);
+    else
+        strntcpy(csc_parent_id_s, "none", sizeof(csc_parent_id_s));
+
+    char *csc_has_children_s;
+
+    if(json_object_get_boolean(json_object_object_get(csc_data, "has_children")))
+        csc_has_children_s = "yes";
+    else
+        csc_has_children_s = "no";
 
     char csc_image_url[512];
 
@@ -225,7 +247,7 @@ void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_
     if(csc_vote_average != (float)csc_vote_average)
         csc_vote_average = 0;
 
-    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Description:</b> %s\n<b>Date:</b> %s\n<b>Author:</b> %s\n<b>Pages:</b> %d\n<b>Rating:</b> %s\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Cover post ID:</b> <code>%d</code>\n<b>Name:</b> <code>%s</code>", csc_image_url, csc_id, csc_description_s, json_object_get_string(json_object_object_get(csc_data, "created_at")), csc_author, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")), csc_rating_s, csc_vote_count, csc_vote_average, json_object_get_int(json_object_object_get(cover_post, "id")), csc_name);
+    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Description:</b> %s\n<b>Date:</b> %s\n<b>Author:</b> %s\n<b>Active</b>: %s\n<b>Pages:</b> %d\n<b>Rating:</b> %s\n<b>Parent ID:</b> %s\n<b>Has children:</b> %s\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Cover post ID:</b> <code>%d</code>\n<b>Name:</b> <code>%s</code>", csc_image_url, csc_id, csc_description_s, json_object_get_string(json_object_object_get(csc_data, "created_at")), csc_author, csc_is_active_s, json_object_get_int(json_object_object_get(csc_data, "visible_post_count")), csc_rating_s, csc_parent_id_s, csc_has_children_s, csc_vote_count, csc_vote_average, json_object_get_int(json_object_object_get(cover_post, "id")), csc_name);
     bot_free(2, csc_author, csc_name);
 }
 
