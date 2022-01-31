@@ -597,7 +597,6 @@ void bot_inline(struct bot_update *result) {
                         json_object_object_add(csc_result, "document_url", json_object_new_string(document));
                         json_object_object_add(csc_result, "mime_type", json_object_new_string("application/zip"));
                         json_object_object_add(csc_result, "description", json_object_new_string("Click to send file"));
-                        json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                     } else {
                         snprintf(csc_title, sizeof(csc_title), "Link to original file of post %d", csc_id);
 
@@ -613,7 +612,6 @@ void bot_inline(struct bot_update *result) {
                         json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
                         json_object_object_add(csc_result, "input_message_content", input_message_content);
                         json_object_object_add(csc_result, "description", json_object_new_string("Click to send link"));
-                        json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                     }
 
                     json_object_object_add(button, "text", json_object_new_string("Download manually, link expires in 3 hours"));
@@ -622,6 +620,7 @@ void bot_inline(struct bot_update *result) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
+                    json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                 } else if(!bot_command_inline_parse(result->inline_query, "post")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
@@ -653,8 +652,6 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(input_message_content, "message_text", json_object_new_string(csc_info));
                     json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
                     json_object_object_add(csc_result, "input_message_content", input_message_content);
-                    json_object_object_add(csc_result, "description", json_object_new_string("Click to send post information"));
-                    json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                     json_object_object_add(button, "text", json_object_new_string("Post link"));
                     json_object_object_add(button, "url", json_object_new_string(csc_button));
                     json_object_array_add(inline_keyboard2, button);
@@ -664,6 +661,8 @@ void bot_inline(struct bot_update *result) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
+                    json_object_object_add(csc_result, "description", json_object_new_string("Click to send post information"));
+                    json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                 } else if(!bot_command_inline_parse(result->inline_query, "book")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
@@ -699,8 +698,6 @@ void bot_inline(struct bot_update *result) {
                     json_object_object_add(input_message_content, "message_text", json_object_new_string(csc_info));
                     json_object_object_add(input_message_content, "parse_mode", json_object_new_string("HTML"));
                     json_object_object_add(csc_result, "input_message_content", input_message_content);
-                    json_object_object_add(csc_result, "description", json_object_new_string("Click to send book information"));
-                    json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                     json_object_object_add(button, "text", json_object_new_string("Book link"));
                     json_object_object_add(button, "url", json_object_new_string(csc_button));
                     json_object_array_add(inline_keyboard2, button);
@@ -713,6 +710,8 @@ void bot_inline(struct bot_update *result) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
+                    json_object_object_add(csc_result, "description", json_object_new_string("Click to send book information"));
+                    json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : CSC_DPREVIEW_URL));
                 }
             } else {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));

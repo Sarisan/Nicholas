@@ -10,10 +10,10 @@ char csc_authorization_header[512];
 void *csc_authorization() { 
     json_object *login_object = json_object_new_object();
 
-    extern char *login, *password;
+    extern char *csc_login, *csc_password;
 
-    json_object_object_add(login_object, "login", json_object_new_string(login));
-    json_object_object_add(login_object, "password", json_object_new_string(password));
+    json_object_object_add(login_object, "login", json_object_new_string(csc_login));
+    json_object_object_add(login_object, "password", json_object_new_string(csc_password));
 
     CURL *authorize = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");

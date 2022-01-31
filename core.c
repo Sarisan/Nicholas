@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *api = 0, *admin = 0, *login = 0, *password = 0;
-int global_signal = 0, quiet = 0;
+char *bot_api = 0, *bot_admin = 0, *csc_login = 0, *csc_password = 0;
+int global_signal = 0, bot_quiet = 0;
 
 void bot_commands(struct bot_update *result);
 void bot_inline(struct bot_update *result);
@@ -33,7 +33,7 @@ void *bot_parse(void *data) {
         bot_log(0, "bot_parse: %d: message_text: %s\n", result.update_id, result.message_text[0] ? result.message_text : "empty");
         bot_commands(&result);
 
-        if(admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), admin))
+        if(bot_admin && !strcmp(json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result.update, "message"), "from"), "id")), bot_admin))
             bot_commands_private(&result);
     }
 
@@ -78,22 +78,22 @@ int main(int argc, char **argv) {
                 print_help = 1;
                 break;
             case 'a':
-                api = optarg;
+                bot_api = optarg;
                 break;
             case 'd':
-                admin = optarg;
+                bot_admin = optarg;
                 break;
             case 'l':
-                login = optarg;
+                csc_login = optarg;
                 break;
             case 'p':
-                password = optarg;
+                csc_password = optarg;
                 break;
             case 'o':
                 offset = atoi(optarg);
                 break;
             case 'q':
-                quiet = 1;
+                bot_quiet = 1;
                 break;
             default:
                 return EINVAL;
@@ -111,13 +111,13 @@ int main(int argc, char **argv) {
         printf("  -o, --offset=<arg>\tPrevious offset to continue the bot process\n");
         printf("  -q, --quiet\t\tDisable logs\n");
         return 0;
-    } if(!api || (api && !api[0])) {
+    } if(!bot_api || (bot_api && !bot_api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
         return ENODATA;
-    } if(!login || (login && !api[0])) {
+    } if(!csc_login || (csc_login && !csc_login[0])) {
         fprintf(stderr, "%s: Sankaku Channel login is not set\n", argv[0]);
         return ENODATA;
-    } if(!password || (password && !password[0])) {
+    } if(!csc_password || (csc_password && !csc_password[0])) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
         return ENODATA;
     }

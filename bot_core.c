@@ -10,12 +10,12 @@ struct bot_curl_string {
     size_t length;
 };
 
-extern char *api;
-extern int quiet;
+extern char *bot_api;
+extern int bot_quiet;
 char bot_username[64];
 
 void bot_log(int error, const char *format, ...) {
-    if(!quiet) {
+    if(!bot_quiet) {
         time_t current_time = time(0);
         struct tm *date = localtime(&current_time);
 
@@ -53,13 +53,13 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 }
 
 json_object *bot_get(const char *method, json_object *json) {
-    size_t length = strlen(api) + strlen(method) + 2;
+    size_t length = strlen(bot_api) + strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
     if(!method_url)
         return 0;
 
-    snprintf(method_url, length, "%s/%s", api, method);
+    snprintf(method_url, length, "%s/%s", bot_api, method);
 
     CURL *send_request = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
@@ -93,13 +93,13 @@ json_object *bot_get(const char *method, json_object *json) {
 }
 
 int bot_post(const char *method, json_object *json) {
-    size_t length = strlen(api) + strlen(method) + 2;
+    size_t length = strlen(bot_api) + strlen(method) + 2;
     char *method_url = malloc(sizeof(char) * length);
 
     if(!method_url)
         return -ENOMEM;
 
-    snprintf(method_url, length, "%s/%s", api, method);
+    snprintf(method_url, length, "%s/%s", bot_api, method);
 
     CURL *send_request = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
