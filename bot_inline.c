@@ -558,7 +558,7 @@ void bot_inline(struct bot_update *result) {
             json_object_object_add(csc_answer, "next_offset", json_object_new_int(page));
 
         json_object_put(data);
-    } else if(sscanf(result->inline_query, "%8s", query) == 1 && (!strcmp(query, "original") || !strcmp(query, "post") || !strcmp(query, "book"))) {
+    } else if(!bot_command_inline_parse(result->inline_query, "original") || !bot_command_inline_parse(result->inline_query, "post") || !bot_command_inline_parse(result->inline_query, "book")) {
         char argument[1][16];
         int args = bot_command_getarg(result->inline_query, 1, 16, argument);
 
@@ -567,7 +567,7 @@ void bot_inline(struct bot_update *result) {
         if(args) {
             json_object *csc_data;
 
-            if(strcmp(query, "book"))
+            if(bot_command_inline_parse(result->inline_query, "book"))
                 csc_data = csc_request(8L, "posts/%s/", argument);
             else
                 csc_data = csc_request(8L, "pools/%s/", argument);
@@ -575,7 +575,7 @@ void bot_inline(struct bot_update *result) {
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
             if(csc_id) {
-                if(!strcmp(query, "original")) {
+                if(!bot_command_inline_parse(result->inline_query, "original")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
                     const char *document = json_object_get_string(json_object_object_get(csc_data, "file_url"));
                     int csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
@@ -622,7 +622,7 @@ void bot_inline(struct bot_update *result) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
-                } else if(!strcmp(query, "post")) {
+                } else if(!bot_command_inline_parse(result->inline_query, "post")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
                     char csc_info[4096];
@@ -664,7 +664,7 @@ void bot_inline(struct bot_update *result) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
-                } else if(!strcmp(query, "book")) {
+                } else if(!bot_command_inline_parse(result->inline_query, "book")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
                     char csc_info[20480];
@@ -720,7 +720,7 @@ void bot_inline(struct bot_update *result) {
                 char error_description[256];
 
                 if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
-                    if(strcmp(query, "book"))
+                    if(bot_command_inline_parse(result->inline_query, "book"))
                         snprintf(error_description, sizeof(error_description), "Wrong post ID");
                     else
                         snprintf(error_description, sizeof(error_description), "Wrong book ID");
@@ -753,7 +753,7 @@ void bot_inline(struct bot_update *result) {
             json_object_object_add(csc_result, "description", json_object_new_string("You must specify an ID"));
         }
         json_object_array_add(csc_results, csc_result);
-    } else if(sscanf(result->inline_query, "%8s", query) == 1 && !strcmp(query, "short")) {
+    } else if(!bot_command_inline_parse(result->inline_query, "short")) {
         char arguments[20][1024];
         int args = bot_command_getarg(result->inline_query, 20, 1024, arguments);
 

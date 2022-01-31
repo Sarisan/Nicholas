@@ -212,6 +212,19 @@ int bot_command_parse(const char *input, const char *command_text) {
     return 0;
 }
 
+int bot_command_inline_parse(const char *input, const char *command_text) {
+    char command_from_input[1024];
+
+    if(sscanf(input, "%1023s", command_from_input)) {
+        if(strcmp(command_from_input, command_text))
+            return -EINVAL;
+    } else {
+        return -EBADR;
+    }
+
+    return 0;
+}
+
 int bot_command_getarg(const char *input, size_t max_args, size_t max_length, char array[max_args][max_length]) {
     char arguments[20480];
     strntcpy(arguments, input, sizeof(arguments));
