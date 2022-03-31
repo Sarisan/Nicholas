@@ -71,7 +71,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     const char *csc_source = json_object_get_string(json_object_object_get(csc_data, "source"));
 
     char *csc_rating_s;
-    
+
     if(!strcmp(csc_rating, "s"))
         csc_rating_s = "safe";
     else if(!strcmp(csc_rating, "q"))
@@ -258,7 +258,7 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
     const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
 
     char csc_name_en_s[6144];
-    
+
     if(csc_name_en) {
         char *csc_name_en_encoded = bot_strenc(csc_name_en, 1024);
         snprintf(csc_name_en_s, sizeof(csc_name_en_s), "<code>%s</code>", csc_name_en_encoded);
@@ -268,7 +268,7 @@ void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id
     }
 
     char csc_name_ja_s[6144];
-    
+
     if(csc_name_ja) {
         char *csc_name_ja_encoded = bot_strenc(csc_name_ja, 1024);
         snprintf(csc_name_ja_s, sizeof(csc_name_ja_s), "<code>%s</code>", csc_name_ja_encoded);
