@@ -62,7 +62,7 @@ size_t bot_curl_writefunction(void *data, size_t size, size_t nmemb, struct bot_
 
 json_object *bot_get(const char *method, json_object *json) {
     size_t length = strlen(bot_api) + strlen(method) + 2;
-    char *method_url = malloc(sizeof(char) * length);
+    char *method_url = malloc(1 * length);
 
     if(!method_url)
         return 0;
@@ -102,7 +102,7 @@ json_object *bot_get(const char *method, json_object *json) {
 
 int bot_post(const char *method, json_object *json) {
     size_t length = strlen(bot_api) + strlen(method) + 2;
-    char *method_url = malloc(sizeof(char) * length);
+    char *method_url = malloc(1 * length);
 
     if(!method_url)
         return -ENOMEM;
@@ -279,7 +279,7 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
 
 char *bot_strenc(const char *input_string, size_t max_length) {
     size_t length = max_length ? max_length : strlen(input_string);
-    char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
+    char *output_string = malloc((1 * length ? length * 5 : 0) + 1);
     if(!output_string)
         return 0;
 

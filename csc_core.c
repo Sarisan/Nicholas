@@ -17,7 +17,7 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     va_end(args);
 
     size_t length = strlen(CSC_API_URL) + strlen(api_data_args) + 2;
-    char *csc_url = malloc(sizeof(char) * length);
+    char *csc_url = malloc(1 * length);
     if(!csc_url)
         return 0;
 
