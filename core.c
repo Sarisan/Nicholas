@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *bot_api = 0, *bot_admin = 0, *csc_login = 0, *csc_password = 0;
+char *bot_api = 0, *bot_admin = 0, *csc_login = 0, *csc_password = 0, *custom_acquisition = 0;
 int global_signal = 0, bot_quiet = 0;
 
 void bot_commands(struct bot_update *result);
@@ -66,10 +66,11 @@ int main(int argc, char **argv) {
             {"password", required_argument, 0, 'p'},
             {"offset", required_argument, 0, 'o'},
             {"quiet", no_argument, 0, 'q'},
+            {"acquisition", required_argument, 0, 'A'},
             {0, 0, 0, 0}
         };
 
-        int option = getopt_long(argc, argv, "ha:d:l:p:o:q", long_options, 0);
+        int option = getopt_long(argc, argv, "ha:d:l:p:o:qA:", long_options, 0);
         if(option == -1)
             break;
 
@@ -95,6 +96,9 @@ int main(int argc, char **argv) {
             case 'q':
                 bot_quiet = 1;
                 break;
+            case 'A':
+                custom_acquisition = optarg;
+                break;
             default:
                 return EINVAL;
         }
@@ -110,6 +114,7 @@ int main(int argc, char **argv) {
         printf("  -p, --password=<arg>\tYour Sankaku Channel password\n");
         printf("  -o, --offset=<arg>\tPrevious offset to continue the bot process\n");
         printf("  -q, --quiet\t\tDisable logs\n");
+        printf("  -A, --acquisition=<arg>\tSet custom acquisition text in help message\n");
         return 0;
     } if(!bot_api || (bot_api && !bot_api[0])) {
         fprintf(stderr, "%s: Telegram Bot API server URL is not set\n", argv[0]);
@@ -120,6 +125,14 @@ int main(int argc, char **argv) {
     } if(!csc_password || (csc_password && !csc_password[0])) {
         fprintf(stderr, "%s: Sankaku Channel password is not set\n", argv[0]);
         return ENODATA;
+    } if(custom_acquisition) {
+        if(strlen(custom_acquisition) > 512) {
+            fprintf(stderr, "%s: Acquisition text length is limited to 512 UTF-8 characters\n", argv[0]);
+            return EMSGSIZE;
+        } else if(!custom_acquisition[0]) {
+            fprintf(stderr, "%s: Acquisition text cannot be empty\n", argv[0]);
+            return ENODATA;
+        }
     }
 
     if(bot_get_username())

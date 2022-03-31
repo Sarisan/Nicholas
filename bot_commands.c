@@ -4,6 +4,8 @@
 #include <string.h>
 #include <string_ext.h>
 
+#define ACQUISITION "I'm Nicholas, the first Fletcher-class ship to be launched... I'd rather stay at the base than head out to battle... You don't mind, right?"
+
 void bot_commands(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "start") || !bot_command_parse(result->message_text, "help")) {
         json_object *info = json_object_new_object();
@@ -18,8 +20,34 @@ void bot_commands(struct bot_update *result) {
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
         int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message"), "message_id"));
 
+        extern char *custom_acquisition;
+
+        char message_text[2048 + 1];
+        int text_offset = snprintf(message_text, sizeof(message_text), "%s\n\n", custom_acquisition ? custom_acquisition : ACQUISITION);
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<b>Search arguments</b>\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "The first argument is the page number, can be from 1 to 100.\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>b</code> - Switches search to book search\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>n</code> - Sub-argument of 'b', switches search by tags to search by name\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>t</code> - Switches search to tag search\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>p</code> - Replaces all animated content with its preview\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>a</code> - Enables auto-paging mode\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>q</code> - Adds quick access buttons: original, preview, information\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "Example: <code>1bnpaq</code>\n\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<b>Inline mode commands</b>\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>original</code> - Get original file of post by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>post</code> - Get information about post by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>book</code> - Get information about book by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>short</code> - Create inline mode shortcut\n\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<b>Commands</b>\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/help - Helpful information about me\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/original - Get original file of post by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/post - Get information about post by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/book - Get information about book by id\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/tag - Get information about tag by tag id or name\n");
+        text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "/short - Create inline mode shortcut");
+
         json_object_object_add(info, "chat_id", json_object_new_string(chat_id));
-        json_object_object_add(info, "text", json_object_new_string("I'm Nicholas, the first Fletcher-class ship to be launched... Here I can help you to search on Sankaku Channel via inline mode.\n\n<b>Search arguments</b>\nThe first argument is the page number, can be from 1 to 100.\n<code>b</code> - Switches search to book search\n<code>n</code> - Sub-argument of 'b', switches search by tags to search by name\n<code>t</code> - Switches search to tag search\n<code>p</code> - Replaces all animated content with its preview\n<code>a</code> - Enables auto-paging mode\n<code>q</code> - Adds quick access buttons: original, preview, information\nExample: <code>1bnpaq</code>\n\n<b>Inline mode commands</b>\n<code>original</code> - Get original file of post by id\n<code>post</code> - Get information about post by id\n<code>book</code> - Get information about book by id\n<code>short</code> - Create inline mode shortcut\n\n<b>Commands</b>\n/help - Helpful information about me\n/original - Get original file of post by id\n/post - Get information about post by id\n/book - Get information about book by id\n/tag - Get information about tag by tag id or name\n/short - Create inline mode shortcut"));
+        json_object_object_add(info, "text", json_object_new_string(message_text));
         json_object_object_add(info, "parse_mode", json_object_new_string("HTML"));
         json_object_object_add(info, "reply_to_message_id", json_object_new_int(reply_id ? reply_id : message_id));
         json_object_object_add(button, "text", json_object_new_string("Search posts"));
