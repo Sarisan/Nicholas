@@ -5,12 +5,21 @@
 #include <pthread.h>
 #include <string_ext.h>
 
+char *csc_login = 0;
+char *csc_password = 0;
+
+char **__csc_login() {
+    return &csc_login;
+}
+
+char **__csc_password() {
+    return &csc_password;
+}
+
 char csc_authorization_header[512];
 
 void *csc_authorization() { 
     json_object *login_object = json_object_new_object();
-
-    extern char *csc_login, *csc_password;
 
     json_object_object_add(login_object, "login", json_object_new_string(csc_login));
     json_object_object_add(login_object, "password", json_object_new_string(csc_password));

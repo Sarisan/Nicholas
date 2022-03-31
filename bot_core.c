@@ -10,9 +10,17 @@ struct bot_curl_string {
     size_t length;
 };
 
-extern char *bot_api;
-extern int bot_quiet;
+int bot_quiet = 0;
+char *bot_api = 0;
 char bot_username[64];
+
+int *__bot_quiet() {
+    return &bot_quiet;
+}
+
+char **__bot_api() {
+    return &bot_api;
+}
 
 void bot_log(int error, const char *format, ...) {
     if(!bot_quiet) {

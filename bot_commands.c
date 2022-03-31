@@ -6,6 +6,12 @@
 
 #define ACQUISITION "I'm Nicholas, the first Fletcher-class ship to be launched... I'd rather stay at the base than head out to battle... You don't mind, right?"
 
+char *custom_acquisition = 0;
+
+char **__custom_acquisition() {
+    return &custom_acquisition;
+}
+
 void bot_commands(struct bot_update *result) {
     if(!bot_command_parse(result->message_text, "start") || !bot_command_parse(result->message_text, "help")) {
         json_object *info = json_object_new_object();
@@ -19,8 +25,6 @@ void bot_commands(struct bot_update *result) {
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(result->update, "message"), "message_id"));
         int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message"), "message_id"));
-
-        extern char *custom_acquisition;
 
         char message_text[2048 + 1];
         int text_offset = snprintf(message_text, sizeof(message_text), "%s\n\n", custom_acquisition ? custom_acquisition : ACQUISITION);

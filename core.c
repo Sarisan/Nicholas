@@ -1,4 +1,4 @@
-#include <core.h>
+#include <bot.h>
 #include <csc_core.h>
 #include <errno.h>
 #include <getopt.h>
@@ -8,13 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *bot_api = 0, *bot_admin = 0, *csc_login = 0, *csc_password = 0, *custom_acquisition = 0;
-int global_signal = 0, bot_quiet = 0;
-
-void bot_commands(struct bot_update *result);
-void bot_inline(struct bot_update *result);
-void bot_callback(struct bot_update *result);
-void bot_commands_private(struct bot_update *result);
+char *bot_admin = 0;
+int global_signal = 0;
 
 void signal_handler(int signal_int) {
     global_signal = signal_int;

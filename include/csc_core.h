@@ -6,6 +6,13 @@
 #define CSC_POOL_URL "https://beta.sankakucomplex.com/books"
 #define CSC_DPREVIEW_URL "https://s.sankakucomplex.com/download-preview.png"
 
+#define csc_login (*__csc_login())
+#define csc_password (*__csc_password())
+
+char **__csc_login();
+
+char **__csc_password();
+
 int csc_auth();
 
 void csc_check(time_t *start);

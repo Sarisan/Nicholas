@@ -3,12 +3,13 @@
 
 #define BOT_VERSION "4.0-rc1"
 
+#define bot_quiet (*__bot_quiet())
+#define bot_api (*__bot_api())
+
 struct bot_curl_string {
     char *string;
     size_t length;
 };
-
-extern char bot_username[64];
 
 struct bot_update {
     json_object *update;
@@ -17,6 +18,12 @@ struct bot_update {
     const char *callback_data;
     const char *message_text;
 };
+
+extern char bot_username[64];
+
+int *__bot_quiet();
+
+char **__bot_api();
 
 void bot_log(int error, const char *format, ...);
 
