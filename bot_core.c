@@ -268,3 +268,39 @@ int bot_command_getarg(const char *input, size_t max_args, size_t max_length, ch
 
     return count;
 }
+
+char *bot_strenc(const char *input_string, size_t max_length) {
+    size_t length = max_length ? max_length : strlen(input_string);
+    char *output_string = malloc((sizeof(char) * length ? length * 5 : 0) + 1);
+    if(!output_string)
+        return 0;
+
+    size_t string_size = 0;
+
+    for(size_t c = 0; input_string[c] && c < length; c++) {
+        if(input_string[c] == '<') {
+            memcpy(&output_string[string_size], "&#60;", 5);
+            string_size += 5;
+        } else if(input_string[c] == '>') {
+            memcpy(&output_string[string_size], "&#62;", 5);
+            string_size += 5;
+        } else {
+            memcpy(&output_string[string_size], &input_string[c], 1);
+            string_size += 1;
+        }
+    }
+
+    output_string[string_size] = 0;
+
+    return output_string;
+}
+
+void bot_free(size_t number, ...) {
+    va_list args;
+    va_start(args, number);
+
+    for(size_t n = 0; n < number; n++)
+        free(va_arg(args, void *));
+
+    va_end(args);
+}

@@ -35,3 +35,7 @@ int bot_command_parse(const char *input, const char *command_text);
 int bot_command_inline_parse(const char *input, const char *command_text);
 
 int bot_command_getarg(const char *input, size_t max_args, size_t max_length, char array[max_args][max_length]);
+
+char *bot_strenc(const char *input_string, size_t max_length);
+
+void bot_free(size_t number, ...);
