@@ -91,7 +91,7 @@ void bot_commands(struct bot_update *result) {
                     int csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
                     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
 
-                    if(csc_filetype && strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
+                    if(csc_filetype && csc_size <= 20971520) {
                         json_object_object_add(info, "document", json_object_new_string(document));
                         json_object_object_add(info, "reply_to_message_id", json_object_new_int(reply_id ? reply_id : message_id));
                     } else {

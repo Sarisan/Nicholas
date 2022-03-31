@@ -588,7 +588,7 @@ void bot_inline(struct bot_update *result) {
                     json_object *inline_keyboard1 = json_object_new_array();
                     json_object *inline_keyboard2 = json_object_new_array();
 
-                    if(csc_filetype && strcmp(csc_filetype, "video/webm") && csc_size <= 20971520) {
+                    if(csc_filetype && csc_size <= 20971520) {
                         snprintf(csc_title, sizeof(csc_title), "Original file of post %d", csc_id);
 
                         json_object_object_add(csc_result, "type", json_object_new_string("document"));
