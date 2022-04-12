@@ -274,13 +274,10 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
         strntcpy(csc_source_s, "none", sizeof(csc_source_s));
     }
 
-    char csc_date[16];
-    strftime(csc_date, sizeof(csc_date), "%d.%m.%Y", date);
+    char csc_date[16 + 1];
+    strftime(csc_date, sizeof(csc_date), "%Y-%m-%d %R", date);
 
-    char  csc_time[16];
-    strftime(csc_time, sizeof(csc_time), "%T %Z", date);
-
-    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> <code>%s</code> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_image_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(csc_data, "sample_width")), json_object_get_string(json_object_object_get(csc_data, "sample_height")), json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_time, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(csc_data, "md5")), json_object_get_int(json_object_object_get(csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
+    snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_image_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(csc_data, "sample_width")), json_object_get_string(json_object_object_get(csc_data, "sample_height")), json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(csc_data, "md5")), json_object_get_int(json_object_object_get(csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
     bot_free(1, csc_author);
 }
 

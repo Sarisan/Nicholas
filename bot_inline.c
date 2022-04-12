@@ -222,8 +222,8 @@ void bot_inline(struct bot_update *result) {
                         csc_sheight = 150;
                     }
 
-                    char csc_date[16];
-                    strftime(csc_date, sizeof(csc_date), "%d.%m.%Y", date);
+                    char csc_date[16 + 1];
+                    strftime(csc_date, sizeof(csc_date), "%Y-%m-%d %R", date);
 
                     char csc_caption[128];
                     snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
