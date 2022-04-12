@@ -51,11 +51,18 @@ void *csc_authorization() {
     json_object_object_add(login_object, "login", json_object_new_string(_csc_login));
     json_object_object_add(login_object, "password", json_object_new_string(_csc_password));
 
+    size_t length = strlen(CSC_API_URL) + strlen(CSC_API_AUTH) + 2;
+    char *csc_url = malloc(1 * length);
+    if(!csc_url)
+        return 0;
+
+    snprintf(csc_url, length, "%s/%s", CSC_API_URL, CSC_API_AUTH);
+
     CURL *authorize = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
     struct csc_curl_string string = {0};
 
-    curl_easy_setopt(authorize, CURLOPT_URL, "https://capi-v2.sankakucomplex.com/auth/token");
+    curl_easy_setopt(authorize, CURLOPT_URL, csc_url);
     curl_easy_setopt(authorize, CURLOPT_POSTFIELDS, json_object_to_json_string(login_object));
     curl_easy_setopt(authorize, CURLOPT_HTTPHEADER, slist_json);
     curl_easy_setopt(authorize, CURLOPT_USERAGENT, "Nicholas");
@@ -66,6 +73,7 @@ void *csc_authorization() {
 
     curl_slist_free_all(slist_json);
     curl_easy_cleanup(authorize);
+    free(csc_url);
     json_object_put(login_object);
 
     if(!string.string) {
