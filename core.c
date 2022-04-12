@@ -144,8 +144,8 @@ int main(int argc, char **argv) {
 
         if(result.update) {
             result.update_id = json_object_get_int(json_object_object_get(result.update, "update_id"));
-            pthread_t thread = result.update_id;
             offset = result.update_id + 1;
+            pthread_t thread;
 
             pthread_create(&thread, 0, bot_parse, &result);
             pthread_detach(thread);
