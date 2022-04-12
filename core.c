@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 
     if(bot_get_username())
         return EINVAL;
-    if(csc_auth())
+    if(csc_init())
         return EINVAL;
 
     time_t csc_auth_time = time(0);

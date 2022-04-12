@@ -12,6 +12,7 @@
 char **__csc_login();
 char **__csc_password();
 
+int csc_init();
 int csc_auth();
 void csc_check(time_t *start);
 json_object *csc_request(long timeout, const char *api_data, ...);

@@ -8,6 +8,12 @@
 #include <string.h>
 #include <string_ext.h>
 
+int csc_init() {
+    setenv("TZ", "US/Central", 1);
+
+    return csc_auth();
+}
+
 char *_csc_login = 0;
 
 char **__csc_login() {
