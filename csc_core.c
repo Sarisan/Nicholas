@@ -13,6 +13,18 @@ struct csc_curl_string {
     size_t length;
 };
 
+char *_csc_login = 0;
+char *_csc_password = 0;
+char csc_authorization_header[512];
+
+char **__csc_login() {
+    return &_csc_login;
+}
+
+char **__csc_password() {
+    return &_csc_password;
+}
+
 int csc_init() {
     setenv("TZ", "US/Central", 1);
     return csc_auth();
@@ -32,20 +44,6 @@ size_t csc_curl_writefunction(void *data, size_t size, size_t nmemb, struct csc_
 
     return realsize;
 }
-
-char *_csc_login = 0;
-
-char **__csc_login() {
-    return &_csc_login;
-}
-
-char *_csc_password = 0;
-
-char **__csc_password() {
-    return &_csc_password;
-}
-
-char csc_authorization_header[512];
 
 void *csc_authorization() {
     json_object *login_object = json_object_new_object();
