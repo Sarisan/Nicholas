@@ -52,7 +52,8 @@ void *csc_authorization() {
     json_object_object_add(login_object, "password", json_object_new_string(_csc_password));
 
     size_t length = strlen(CSC_API_URL) + strlen(CSC_API_AUTH) + 2;
-    char *csc_url = malloc(1 * length);
+    char *csc_url = malloc(length);
+
     if(!csc_url)
         return 0;
 
@@ -139,7 +140,8 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     va_end(args);
 
     size_t length = strlen(CSC_API_URL) + strlen(api_data_args) + 2;
-    char *csc_url = malloc(1 * length);
+    char *csc_url = malloc(length);
+
     if(!csc_url)
         return 0;
 
