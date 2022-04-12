@@ -1,3 +1,4 @@
+#include <bot.h>
 #include <core.h>
 #include <csc_core.h>
 #include <stdio.h>

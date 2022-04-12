@@ -1,3 +1,4 @@
+#include <bot.h>
 #include <core.h>
 #include <csc_core.h>
 #include <curl/curl.h>
@@ -6,10 +7,10 @@
 
 #define ACQUISITION "I'm Nicholas, the first Fletcher-class ship to be launched... I'd rather stay at the base than head out to battle... You don't mind, right?"
 
-char *custom_acquisition = 0;
+char *_custom_acquisition = 0;
 
 char **__custom_acquisition() {
-    return &custom_acquisition;
+    return &_custom_acquisition;
 }
 
 void bot_commands(struct bot_update *result) {
@@ -27,7 +28,7 @@ void bot_commands(struct bot_update *result) {
         int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(result->update, "message"), "reply_to_message"), "message_id"));
 
         char message_text[2048 + 1];
-        int text_offset = snprintf(message_text, sizeof(message_text), "%s\n\n", custom_acquisition ? custom_acquisition : ACQUISITION);
+        int text_offset = snprintf(message_text, sizeof(message_text), "%s\n\n", _custom_acquisition ? _custom_acquisition : ACQUISITION);
         text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<b>Search arguments</b>\n");
         text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "The first argument is the page number, can be from 1 to 100.\n");
         text_offset += snprintf(&message_text[text_offset], sizeof(message_text) - text_offset, "<code>b</code> - Switches search to book search\n");

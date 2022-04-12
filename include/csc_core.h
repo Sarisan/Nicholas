@@ -10,17 +10,11 @@
 #define csc_password (*__csc_password())
 
 char **__csc_login();
-
 char **__csc_password();
 
 int csc_auth();
-
 void csc_check(time_t *start);
-
 json_object *csc_request(long timeout, const char *api_data, ...);
-
 void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_id);
-
 void bot_csc_pool(char *csc_info, size_t length, json_object *csc_data, int csc_id);
-
 void bot_csc_tag(char *csc_tag, size_t length, json_object *csc_data, int csc_id);

@@ -1,4 +1,5 @@
 #include <bot.h>
+#include <core.h>
 #include <csc_core.h>
 #include <errno.h>
 #include <getopt.h>
