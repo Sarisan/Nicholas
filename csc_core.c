@@ -26,7 +26,7 @@ char **__csc_password() {
 }
 
 int csc_init() {
-    setenv("TZ", "US/Central", 1);
+    setenv("TZ", "US/Hawaii", 1);
     return csc_auth();
 }
 
