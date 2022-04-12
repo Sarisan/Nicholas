@@ -8,10 +8,29 @@
 #include <string.h>
 #include <string_ext.h>
 
+struct csc_curl_string {
+    char *string;
+    size_t length;
+};
+
 int csc_init() {
     setenv("TZ", "US/Central", 1);
-
     return csc_auth();
+}
+
+size_t csc_curl_writefunction(void *data, size_t size, size_t nmemb, struct csc_curl_string *string) {
+    size_t realsize = size * nmemb;
+
+    string->string = realloc(string->string, string->length + realsize + 1);
+
+    if(!string->string)
+        return 0;
+
+    memcpy(&string->string[string->length], data, realsize);
+    string->length += realsize;
+    string->string[string->length] = 0;
+
+    return realsize;
 }
 
 char *_csc_login = 0;
@@ -28,7 +47,7 @@ char **__csc_password() {
 
 char csc_authorization_header[512];
 
-void *csc_authorization() { 
+void *csc_authorization() {
     json_object *login_object = json_object_new_object();
 
     json_object_object_add(login_object, "login", json_object_new_string(_csc_login));
@@ -36,14 +55,14 @@ void *csc_authorization() {
 
     CURL *authorize = curl_easy_init();
     struct curl_slist *slist_json = curl_slist_append(0, "Content-Type: application/json");
-    struct bot_curl_string string = {0};
+    struct csc_curl_string string = {0};
 
     curl_easy_setopt(authorize, CURLOPT_URL, "https://capi-v2.sankakucomplex.com/auth/token");
     curl_easy_setopt(authorize, CURLOPT_POSTFIELDS, json_object_to_json_string(login_object));
     curl_easy_setopt(authorize, CURLOPT_HTTPHEADER, slist_json);
     curl_easy_setopt(authorize, CURLOPT_USERAGENT, "Nicholas");
     curl_easy_setopt(authorize, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(authorize, CURLOPT_WRITEFUNCTION, bot_curl_writefunction);
+    curl_easy_setopt(authorize, CURLOPT_WRITEFUNCTION, csc_curl_writefunction);
     curl_easy_setopt(authorize, CURLOPT_WRITEDATA, &string);
     curl_easy_perform(authorize);
 
@@ -122,13 +141,13 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
 
     CURL *get_data = curl_easy_init();
     struct curl_slist *slist_auth = curl_slist_append(0, csc_authorization_header);
-    struct bot_curl_string string = {0};
+    struct csc_curl_string string = {0};
 
     curl_easy_setopt(get_data, CURLOPT_URL, csc_url);
     curl_easy_setopt(get_data, CURLOPT_HTTPHEADER, slist_auth);
     curl_easy_setopt(get_data, CURLOPT_USERAGENT, "Nicholas");
     curl_easy_setopt(get_data, CURLOPT_CUSTOMREQUEST, "GET");
-    curl_easy_setopt(get_data, CURLOPT_WRITEFUNCTION, bot_curl_writefunction);
+    curl_easy_setopt(get_data, CURLOPT_WRITEFUNCTION, csc_curl_writefunction);
     curl_easy_setopt(get_data, CURLOPT_WRITEDATA, &string);
     if(timeout) {
         curl_easy_setopt(get_data, CURLOPT_TIMEOUT, timeout);
