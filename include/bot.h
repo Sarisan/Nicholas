@@ -1,6 +1,6 @@
 #include <json-c/json_object.h>
 
-#define BOT_VERSION "4.0-rc1"
+#define BOT_VERSION "4.0-rc2"
 
 struct bot_update {
     json_object *update;
