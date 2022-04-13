@@ -403,7 +403,7 @@ void bot_inline(struct bot_update *result) {
                     }
 
                     char csc_caption[6144];
-                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> %s\n\n<b>%s</b>", csc_id, csc_date, csc_name);
+                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>\n\n<b>%s</b>", csc_id, csc_date, csc_name);
                     bot_free(1, csc_name);
 
                     char csc_button[128];
