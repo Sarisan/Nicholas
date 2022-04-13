@@ -1,8 +1,6 @@
 #include <json-c/json_object.h>
 #include <stddef.h>
 
-#define BOT_VERSION "4.0-rc1"
-
 #define bot_quiet (*__bot_quiet())
 #define bot_api (*__bot_api())
 
