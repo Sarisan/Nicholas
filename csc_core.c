@@ -25,11 +25,6 @@ char **__csc_password() {
     return &_csc_password;
 }
 
-int csc_init() {
-    setenv("TZ", "US/Hawaii", 1);
-    return csc_auth();
-}
-
 size_t csc_curl_writefunction(void *data, size_t size, size_t nmemb, struct csc_curl_string *string) {
     size_t realsize = size * nmemb;
 
@@ -178,6 +173,12 @@ json_object *csc_request(long timeout, const char *api_data, ...) {
     return data;
 }
 
+void csc_getdate(char *csc_date, size_t size, time_t rawtime) {
+    rawtime += 3600 * CSC_TZ;
+    struct tm *date = gmtime(&rawtime);
+    strftime(csc_date, size, "%Y-%m-%d %R", date);
+}
+
 void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_id) {
     const char *csc_rating = json_object_get_string(json_object_object_get(csc_data, "rating"));
     char *csc_author = bot_strenc(json_object_get_string(json_object_object_get(json_object_object_get(csc_data, "author"), "name")), 256);
@@ -187,7 +188,6 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     float csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
     time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(csc_data, "created_at"), "s"));
-    struct tm *date = localtime(&rawtime);
     const char *csc_parent_id = json_object_get_string(json_object_object_get(csc_data, "parent_id"));
     float csc_vote_count = json_object_get_int(json_object_object_get(csc_data, "vote_count"));
     float csc_vote_average = json_object_get_int(json_object_object_get(csc_data, "total_score")) / csc_vote_count;
@@ -275,7 +275,7 @@ void bot_csc_post(char *csc_info, size_t length, json_object *csc_data, int csc_
     }
 
     char csc_date[16 + 1];
-    strftime(csc_date, sizeof(csc_date), "%Y-%m-%d %R", date);
+    csc_getdate(csc_date, sizeof(csc_date), rawtime);
 
     snprintf(csc_info, length, "<a href=\"%s\">&#8203;</a><b>ID:</b> <code>%d</code>\n<b>Rating:</b> %s\n<b>Status:</b> %s\n<b>Author:</b> %s\n<b>Sample resolution:</b> %sx%s\n<b>Resolution:</b> %sx%s\n<b>Size:</b> <code>%.0f</code> bytes %s\n<b>Type:</b> %s\n<b>Date:</b> %s\n<b>Has children:</b> %s\n<b>Parent ID:</b> %s\n<b>MD5:</b> <code>%s</code>\n<b>Fav count:</b> %d\n<b>Vote count:</b> %.0f\n<b>Vote average:</b> %.2f\n<b>Source:</b> %s", csc_image_url, csc_id, csc_rating_s, json_object_get_string(json_object_object_get(csc_data, "status")), csc_author, json_object_get_string(json_object_object_get(csc_data, "sample_width")), json_object_get_string(json_object_object_get(csc_data, "sample_height")), json_object_get_string(json_object_object_get(csc_data, "width")), json_object_get_string(json_object_object_get(csc_data, "height")), csc_size, csc_size_s, csc_format, csc_date, csc_has_children_s, csc_parent_id_s, json_object_get_string(json_object_object_get(csc_data, "md5")), json_object_get_int(json_object_object_get(csc_data, "fav_count")), csc_vote_count, csc_vote_average, csc_source_s);
     bot_free(1, csc_author);

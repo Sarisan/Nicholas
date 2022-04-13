@@ -111,7 +111,6 @@ void bot_inline(struct bot_update *result) {
                     float csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
                     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
                     time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(csc_data, "created_at"), "s"));
-                    struct tm *date = localtime(&rawtime);
 
                     char *csc_rating_s = "";
 
@@ -223,7 +222,7 @@ void bot_inline(struct bot_update *result) {
                     }
 
                     char csc_date[16 + 1];
-                    strftime(csc_date, sizeof(csc_date), "%Y-%m-%d %R", date);
+                    csc_getdate(csc_date, sizeof(csc_date), rawtime);
 
                     char csc_caption[128];
                     snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
