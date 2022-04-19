@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <errno.h>
 #include <json-c/json_tokener.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string_ext.h>
