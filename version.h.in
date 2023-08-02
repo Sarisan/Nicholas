@@ -1,0 +1,2 @@
+#define Nicholas_VERSION_MAJOR @Nicholas_VERSION_MAJOR@
+#define Nicholas_VERSION_MINOR @Nicholas_VERSION_MINOR@
