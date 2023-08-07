@@ -22,12 +22,14 @@ static struct option long_options[] =
 int main(int argc, char **argv)
 {
     int ret = 0;
-    json_object *config = 0;
 
     signal(SIGINT, init_signal);
     curl_global_init(CURL_GLOBAL_ALL);
 
-    config = config_init();
+    ret = config_init();
+
+    if (ret)
+        goto out;
 
     while (true) {
         int option = getopt_long(argc, argv, "hs:t:qm:o:p:", long_options, 0);
@@ -39,37 +41,37 @@ int main(int argc, char **argv)
                 init_help(argv[0]);
                 goto out;
             case 's':
-                ret = config_set_string(config, BOT_SERVER, optarg);
+                ret = config_set_string(BOT_SERVER, optarg);
                 if (ret)
                     goto out;
 
                 break;
             case 't':
-                ret = config_set_string(config, BOT_TOKEN, optarg);
+                ret = config_set_string(BOT_TOKEN, optarg);
                 if (ret)
                     goto out;
 
                 break;
             case 'o':
-                ret = config_set_string(config, BOT_OFFSET, optarg);
+                ret = config_set_string(BOT_OFFSET, optarg);
                 if (ret)
                     goto out;
 
                 break;
             case 'm':
-                ret = config_set_string(config, BOT_MESSAGE, optarg);
+                ret = config_set_string(BOT_MESSAGE, optarg);
                 if (ret)
                     goto out;
 
                 break;
             case 'l':
-                ret = config_set_string(config, SANKAKU_LOGIN, optarg);
+                ret = config_set_string(SANKAKU_LOGIN, optarg);
                 if (ret)
                     goto out;
 
                 break;
             case 'p':
-                ret = config_set_string(config, SANKAKU_PASSWORD, optarg);
+                ret = config_set_string(SANKAKU_PASSWORD, optarg);
                 if (ret)
                     goto out;
 
@@ -79,10 +81,10 @@ int main(int argc, char **argv)
         }
     }
 
-    init_bot(config);
+    init_bot();
 
 out:
     curl_global_cleanup();
-    config_free(config);
+    config_destroy();
     return ret;
 }

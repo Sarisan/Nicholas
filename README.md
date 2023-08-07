@@ -33,6 +33,7 @@ cmake --build build --target install -j 4
 ```
 
 ## Running
+
 ```
 nicholas --help
 ```

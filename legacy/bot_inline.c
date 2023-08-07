@@ -8,7 +8,7 @@
 #include <string.h>
 #include <string/string.h>
 
-void bot_legacy_inline(const char *inline_query_data, json_object *config, json_object *update) {
+void bot_legacy_inline(const char *inline_query_data, json_object *update) {
     char inline_query[1024], arguments[8]= {0}, pre_query[1024]= {0}, query[4096]= {0};
     short page, action = 0, preview = 0, autopaging = 0, quickaccess = 0;
 
@@ -89,13 +89,13 @@ void bot_legacy_inline(const char *inline_query_data, json_object *config, json_
         json_object *data = 0;
 
         if(!action)
-            data = sankaku_request(config, "posts?page=%d&tags=%s", page, query);
+            data = sankaku_request("posts?page=%d&tags=%s", page, query);
         else if(action == 1)
-            data = sankaku_request(config, "pools?page=%d&tags=%s", page, query);
+            data = sankaku_request("pools?page=%d&tags=%s", page, query);
         else if(action == 2)
-            data = sankaku_request(config, "pools?page=%d&name=%s", page, query);
+            data = sankaku_request("pools?page=%d&name=%s", page, query);
         else if(action == 3)
-            data = sankaku_request(config, "tags?page=%d&name=%s", page, query);
+            data = sankaku_request("tags?page=%d&name=%s", page, query);
 
         short array = 0;
 
@@ -572,9 +572,9 @@ void bot_legacy_inline(const char *inline_query_data, json_object *config, json_
             const char *argument = command_args_get(arguments, 0);
 
             if(inline_compare(inline_query_data, "book"))
-                csc_data = sankaku_request(config, "posts/%s/", argument);
+                csc_data = sankaku_request("posts/%s/", argument);
             else
-                csc_data = sankaku_request(config, "pools/%s/", argument);
+                csc_data = sankaku_request("pools/%s/", argument);
 
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
@@ -828,6 +828,6 @@ void bot_legacy_inline(const char *inline_query_data, json_object *config, json_
 
     json_object_object_add(csc_answer, "cache_time", json_object_new_int(0));
 
-    api_post(config, "answerInlineQuery", csc_answer);
+    api_post("answerInlineQuery", csc_answer);
     json_object_put(csc_answer);
 }

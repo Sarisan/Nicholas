@@ -18,14 +18,14 @@
 
 #undef curl_easy_setopt
 
-static json_object *sankaku_io(const char *sankaku_url, const char *post_fields,
-                        const char *http_header)
+static json_object *sankaku_io(const char *url,
+        const char *post_fields, const char *header)
 {
     CURL *sankaku = 0;
     struct curl_slist *slist = 0;
     struct string_curl string = {0};
     CURLcode error = 0;
-    json_object *sankaku_json = 0;
+    json_object *data = 0;
 
     sankaku = curl_easy_init();
 
@@ -35,7 +35,7 @@ static json_object *sankaku_io(const char *sankaku_url, const char *post_fields,
         goto err;
     }
 
-    slist = curl_slist_append(0, http_header);
+    slist = curl_slist_append(0, header);
 
     if (!slist) {
         debug_log(EMEM, "sankaku_io: %s", debug_message(EMEM));
@@ -58,7 +58,7 @@ static json_object *sankaku_io(const char *sankaku_url, const char *post_fields,
     curl_easy_setopt(sankaku,
             CURLOPT_TIMEOUT, TIMEOUT);
     curl_easy_setopt(sankaku,
-            CURLOPT_URL, sankaku_url);
+            CURLOPT_URL, url);
     curl_easy_setopt(sankaku,
             CURLOPT_USERAGENT, "Nicholas");
     curl_easy_setopt(sankaku,
@@ -78,12 +78,12 @@ static json_object *sankaku_io(const char *sankaku_url, const char *post_fields,
         return 0;
     }
 
-    sankaku_json = json_from_string(string.string);
+    data = json_from_string(string.string);
 
     free(string.string);
 
-    if (sankaku_json) {
-        const char *error = json_string(sankaku_json, "error");
+    if (data) {
+        const char *error = json_string(data, "error");
 
         if(error)
             debug_log(EINV, "sankaku_io: %s", error);
@@ -91,7 +91,7 @@ static json_object *sankaku_io(const char *sankaku_url, const char *post_fields,
         debug_log(EDAT, "sankaku_io: %s", debug_message(EDAT));
     }
 
-    return sankaku_json;
+    return data;
 
 err:
     curl_slist_free_all(slist);
@@ -100,17 +100,17 @@ err:
     return 0;
 }
 
-int sankaku_authorization(json_object *config)
+int sankaku_authorization(void)
 {
-    const char *login = config_get_string(config, SANKAKU_LOGIN);
-    const char *password = config_get_string(config, SANKAKU_PASSWORD);
-    json_object *login_object = 0;
+    const char *login = config_get_string(SANKAKU_LOGIN);
+    const char *password = config_get_string(SANKAKU_PASSWORD);
+    json_object *login_field = 0;
     size_t length = 0;
-    const char *login_field = 0;
-    char *sankaku_url = 0;
-    json_object *login_json = 0;
-    const char *access_token = 0;
-    char *http_header = 0;
+    const char *field = 0;
+    char *url = 0;
+    json_object *login_object = 0;
+    const char *token = 0;
+    char *header = 0;
 
     debug_log(0, "sankaku_authorization: Refreshing access token...");
 
@@ -126,94 +126,95 @@ int sankaku_authorization(json_object *config)
         return EDAT;
     }
 
-    length = strlen(ADDRESS)
-            + strlen(AUTH)
-            + 1;
-    login_object = json_new();
+    length = strlen(ADDRESS) + strlen(AUTH) + 1;
+    login_field = json_new();
 
-    if (!login_object) {
+    if (!login_field) {
         debug_log(EMEM, "sankaku_authorization: %s", debug_message(EMEM));
 
         return EMEM;
     }
 
-    json_add_string(login_object, "login", login);
-    json_add_string(login_object, "password", password);
+    json_add_string(login_field, "login", login);
+    json_add_string(login_field, "password", password);
 
-    login_field = json_to_string(login_object);
-    sankaku_url = malloc(length);
+    field = json_to_string(login_field);
+    url = malloc(length);
 
-    if(!sankaku_url) {
+    if(!url) {
+        debug_log(EMEM, "sankaku_authorization: %s", debug_message(EMEM));
+        json_put(login_field);
+
+        return EMEM;
+    }
+
+    snprintf(url, length, "%s%s", ADDRESS, AUTH);
+
+    login_object = sankaku_io(url, field, HTTP_JSON);
+
+    json_put(login_field);
+    free(url);
+
+    if (!login_object)
+        return EINV;
+
+    token = json_string(login_object, "access_token");
+
+    if (!token) {
+        debug_log(EINV, "sankaku_authorization: %s", debug_message(EINV));
+        json_put(login_object);
+
+        return EINV;
+    }
+
+    header = malloc(strlen(HTTP_HEADER) + strlen(token));
+
+    if (!header) {
         debug_log(EMEM, "sankaku_authorization: %s", debug_message(EMEM));
         json_put(login_object);
 
         return EMEM;
     }
 
-    snprintf(sankaku_url, length, "%s%s", ADDRESS, AUTH);
-
-    login_json = sankaku_io(sankaku_url, login_field, HTTP_JSON);
-
-    json_put(login_object);
-    free(sankaku_url);
-
-    access_token = json_string(login_json, "access_token");
-
-    if (!access_token) {
-        debug_log(EINV, "sankaku_authorization: %s", debug_message(EINV));
-        json_put(login_json);
-
-        return EINV;
-    }
-
-    http_header = malloc(strlen(HTTP_HEADER) + strlen(access_token));
-
-    if (!http_header) {
-        debug_log(EMEM, "sankaku_authorization: %s", debug_message(EMEM));
-        json_put(login_json);
-
-        return EMEM;
-    }
-
-    sprintf(http_header, HTTP_HEADER, access_token);
-    config_set_string(config, SANKAKU_TOKEN, http_header);
+    sprintf(header, HTTP_HEADER, token);
+    config_set_string(SANKAKU_TOKEN, header);
     debug_log(0, "sankaku_authorization: Successful");
 
-    free(http_header);
-    json_put(login_json);
+    free(header);
+    json_put(login_object);
 
     return 0;
 }
 
-__attribute__ ((format (printf, 2, 3)))
-json_object *sankaku_request(json_object *config, const char *api_data, ...)
+__attribute__ ((format (printf, 1, 2)))
+json_object *sankaku_request(const char *api_data, ...)
 {
-    const char *token = config_get_string(config, SANKAKU_TOKEN);
+    const char *token = config_get_string(SANKAKU_TOKEN);
     va_list args = {0};
-    char api_data_args[REQUEST_LENGHT] = {0};
+    char args_string[REQUEST_LENGHT] = {0};
     size_t length = 0;
-    char *sankaku_url = 0;
+    char *url = 0;
     json_object *data = 0;
 
     if (!token)
         debug_log(EDAT, "sankaku_request: No authorization token found");
 
     va_start(args, api_data);
-    vsnprintf(api_data_args, REQUEST_LENGHT, api_data, args);
+    vsnprintf(args_string, REQUEST_LENGHT, api_data, args);
     va_end(args);
 
-    length = strlen(ADDRESS) + strlen(api_data_args) + 1;
-    sankaku_url = malloc(length);
+    length = strlen(ADDRESS) + strlen(args_string) + 1;
+    url = malloc(length);
 
-    if (!sankaku_url) {
+    if (!url) {
         debug_log(EMEM, "sankaku_request: %s", debug_message(EMEM));
 
         return 0;
     }
 
-    snprintf(sankaku_url, length, "%s%s", ADDRESS, api_data_args);
+    snprintf(url, length, "%s%s", ADDRESS, args_string);
 
-    data = sankaku_io(sankaku_url, 0, token);
+    data = sankaku_io(url, 0, token);
 
     return data;
 }

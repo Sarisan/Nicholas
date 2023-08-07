@@ -37,13 +37,13 @@
     "/tag - Get information about tag by tag id or name\n" \
     "/short - Create inline mode shortcut"
 
-void bot_legacy_command(const char *message_text, json_object *config, json_object *update) {
-    const char *username = config_get_string(config, BOT_USERNAME);
+void bot_legacy_command(const char *message_text, json_object *update) {
+    const char *username = config_get_string(BOT_USERNAME);
 
-    if (!command_compare(config, message_text,
-        "start") || !command_compare(config, message_text, "help"))
+    if (!command_compare(message_text,
+        "start") || !command_compare(message_text, "help"))
     {
-        const char *custom_message = config_get_string(config, BOT_MESSAGE);
+        const char *custom_message = config_get_string(BOT_MESSAGE);
         char *msg_text = malloc(strlen(custom_message ? custom_message :
                                 HELP_WELCOME) + strlen(HELP_MESSAGE) + 1);
 
@@ -101,11 +101,11 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                 "inline_keyboard", inline_keyboard1);
             json_object_object_add(info, "reply_markup", inline_keyboard);
 
-            api_post(config, "sendMessage", info);
+            api_post("sendMessage", info);
             json_object_put(info);
             free(msg_text);
         }
-    } else if(!command_compare(config, message_text, "original") || !command_compare(config, message_text, "post") || !command_compare(config, message_text, "book")) {
+    } else if(!command_compare(message_text, "original") || !command_compare(message_text, "post") || !command_compare(message_text, "book")) {
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(update, "message"), "message_id"));
 
@@ -132,7 +132,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                 json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
                 json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
 
-                api_post(config, "sendMessage", error);
+                api_post("sendMessage", error);
                 json_object_put(error);
             }
         }
@@ -145,17 +145,17 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
 
             json_object *csc_data;
 
-            if(command_compare(config, message_text, "book"))
-                csc_data = sankaku_request(config, "posts/%s/", argument);
+            if(command_compare(message_text, "book"))
+                csc_data = sankaku_request("posts/%s/", argument);
             else
-                csc_data = sankaku_request(config, "pools/%s/", argument);
+                csc_data = sankaku_request("pools/%s/", argument);
 
             int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
 
             if(csc_id) {
                 int reply_id = json_object_get_int(json_object_object_get(json_object_object_get(json_object_object_get(update, "message"), "reply_to_message"), "message_id"));
 
-                if(!command_compare(config, message_text, "original")) {
+                if(!command_compare(message_text, "original")) {
                     json_object *button = json_object_new_object();
                     json_object *inline_keyboard = json_object_new_object();
                     json_object *inline_keyboard1 = json_object_new_array();
@@ -183,7 +183,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
-                } else if(!command_compare(config, message_text, "post")) {
+                } else if(!command_compare(message_text, "post")) {
                     char csc_info[4096];
                     sankaku_get_post(csc_info, sizeof(csc_info), csc_data, csc_id);
 
@@ -214,7 +214,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
-                } else if(!command_compare(config, message_text, "book")) {
+                } else if(!command_compare(message_text, "book")) {
                     char csc_info[20480];
                     sankaku_get_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
 
@@ -259,7 +259,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                 char error_description[256];
 
                 if(error_code && !strcmp(error_code, "snackbar__server-error_not-found")) {
-                    if(command_compare(config, message_text, "book"))
+                    if(command_compare(message_text, "book"))
                         snprintf(error_description, sizeof(error_description), "<b>Wrong post ID:</b> <code>%s</code>", argument);
                     else
                         snprintf(error_description, sizeof(error_description), "<b>Wrong book ID:</b> <code>%s</code>", argument);
@@ -278,7 +278,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
             const char *document = json_object_get_string(json_object_object_get(info, "document"));
 
             if(document) {
-                if(api_post(config, "sendDocument", info)) {
+                if(api_post("sendDocument", info)) {
                     json_object *error = json_object_new_object();
                     json_object *button = json_object_new_object();
                     json_object *inline_keyboard = json_object_new_object();
@@ -296,18 +296,18 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(error, "reply_markup", inline_keyboard);
 
-                    api_post(config, "sendMessage", error);
+                    api_post("sendMessage", error);
                     json_object_put(error);
                 }
             } else {
-                api_post(config, "sendMessage", info);
+                api_post("sendMessage", info);
             }
 
             json_object_put(info);
         }
 
         command_args_free(arguments);
-    } else if(!command_compare(config, message_text, "tag")) {
+    } else if(!command_compare(message_text, "tag")) {
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(update, "message"), "message_id"));
 
@@ -322,7 +322,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
             json_object_object_add(error, "parse_mode", json_object_new_string("HTML"));
             json_object_object_add(error, "reply_to_message_id", json_object_new_int(message_id));
 
-            api_post(config, "sendMessage", error);
+            api_post("sendMessage", error);
             json_object_put(error);
         }
 
@@ -335,7 +335,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
             CURL *encode_argument = curl_easy_init();
             char *encoded_argument = curl_easy_escape(encode_argument, argument, 0);
 
-            json_object *csc_data = sankaku_request(config, "tags/%s/", encoded_argument);
+            json_object *csc_data = sankaku_request("tags/%s/", encoded_argument);
 
             curl_free(encoded_argument);
             curl_easy_cleanup(encode_argument);
@@ -396,12 +396,12 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
             }
             json_object_put(csc_data);
 
-            api_post(config, "sendMessage", tag);
+            api_post("sendMessage", tag);
             json_object_put(tag);
         }
 
         command_args_free(arguments);
-    } else if(!command_compare(config, message_text, "short")) {
+    } else if(!command_compare(message_text, "short")) {
         const char *chat_id = json_object_get_string(json_object_object_get(json_object_object_get(json_object_object_get(update, "message"), "chat"), "id"));
         int message_id = json_object_get_int(json_object_object_get(json_object_object_get(update, "message"), "message_id"));
 
@@ -448,7 +448,7 @@ void bot_legacy_command(const char *message_text, json_object *config, json_obje
             json_object_object_add(shortcut, "reply_to_message_id", json_object_new_int(message_id));
         }
 
-        api_post(config, "sendMessage", shortcut);
+        api_post("sendMessage", shortcut);
         json_object_put(shortcut);
         command_args_free(arguments);
     }

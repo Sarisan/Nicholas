@@ -1,11 +1,22 @@
 #include <config/config.h>
+#include <debug/debug.h>
 
-json_object *config_init()
+static json_object *config = 0;
+
+int config_init(void)
 {
-    return json_new();
+    config = json_new();
+
+    if (!config) {
+        debug_log(EMEM, "config_init: %s", debug_message(EMEM));
+
+        return EMEM;
+    }
+
+    return 0;
 }
 
-int config_set_int64(json_object *config, const char *name, int64_t value)
+int config_set_int64(const char *name, int64_t value)
 {
     int ret;
     json_object *object = json_get(config, name);
@@ -15,16 +26,18 @@ int config_set_int64(json_object *config, const char *name, int64_t value)
     else
         ret = json_add_int64(config, name, value);
 
+    if (ret)
+        debug_log(EINV, "config_set_int64: Failed to set %s", name);
+
     return ret;
 }
 
-int64_t config_get_int64(json_object *config, const char *name)
+int64_t config_get_int64(const char *name)
 {
     return json_int64(config, name);
 }
 
-int config_set_string(json_object *config,
-        const char *name, const char *string)
+int config_set_string(const char *name, const char *string)
 {
     int ret;
     json_object *object = json_get(config, name);
@@ -34,15 +47,18 @@ int config_set_string(json_object *config,
     else
         ret = json_add_string(config, name, string);
 
+    if (ret)
+        debug_log(EINV, "config_set_string: Failed to set %s", name);
+
     return ret;
 }
 
-const char *config_get_string(json_object *config, const char *name)
+const char *config_get_string(const char *name)
 {
     return json_string(config, name);
 }
 
-int config_free(json_object *config)
+int config_destroy(void)
 {
     return json_put(config);
 }

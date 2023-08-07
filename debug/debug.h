@@ -5,7 +5,7 @@
 #define EINV 1002
 #define EMEM 1003
 
-extern thread_local int debug_error_code;
+extern thread_local int debug_error;
 
 void debug_log(int error, const char *format, ...);
 const char *debug_message(int error);

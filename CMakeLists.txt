@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Nicholas VERSION 0.2 LANGUAGES C)
+project(Nicholas VERSION 0.3 LANGUAGES C)
 
 configure_file(version.h.in version.h)
 
@@ -8,6 +8,7 @@ option(WALL "Enable -Wall compiler option" ON)
 option(WEXTRA "Enable -Wextra compiler option" ON)
 option(WEVERYTHING "Enable -Weverything compiler option" OFF)
 
+set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 

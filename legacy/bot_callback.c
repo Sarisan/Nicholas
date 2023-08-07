@@ -7,7 +7,7 @@
 #include <string.h>
 #include <string/string.h>
 
-void bot_legacy_callback(const char *callback_data, json_object *config, json_object *update) {
+void bot_legacy_callback(const char *callback_data, json_object *update) {
     short action = 0;
     int id = 0, offset = 0, data = 0, data1 = 0, csc_id = 0;
 
@@ -22,11 +22,11 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
         json_object *csc_data = 0;
 
         if(action == 1 || action == 3)
-            csc_data = sankaku_request(config, "posts/%d/", id);
+            csc_data = sankaku_request("posts/%d/", id);
         else if(action == 2 || action == 4)
-            csc_data = sankaku_request(config, "pools/%d/", id);
+            csc_data = sankaku_request("pools/%d/", id);
         else if(action == 5)
-            csc_data = sankaku_request(config, "posts?page=%d&tags=pool:%d", data, id);
+            csc_data = sankaku_request("posts?page=%d&tags=pool:%d", data, id);
 
         if(action != 5) {
             csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
@@ -170,7 +170,7 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                    api_post(config, "editMessageText", info);
+                    api_post("editMessageText", info);
                     json_object_put(info);
                 } else {
                     json_object_object_add(csc_answer, "text", json_object_new_string("No tags found"));
@@ -217,7 +217,7 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                api_post(config, "editMessageText", info);
+                api_post("editMessageText", info);
                 json_object_put(info);
             } else if(action == 4) {
                 char csc_info[20480];
@@ -268,7 +268,7 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(info, "reply_markup", inline_keyboard);
 
-                api_post(config, "editMessageText", info);
+                api_post("editMessageText", info);
                 json_object_put(info);
             } else if(action == 5) {
                 short pages_array = data > 1 ? offset - 20 * (data - 1) : offset;
@@ -357,7 +357,7 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(book_page, "reply_markup", inline_keyboard);
 
-                api_post(config, "editMessageText", book_page);
+                api_post("editMessageText", book_page);
                 json_object_put(book_page);
             } else {
                 json_object_object_add(csc_answer, "text", json_object_new_string("Invalid action"));
@@ -379,6 +379,6 @@ void bot_legacy_callback(const char *callback_data, json_object *config, json_ob
         json_object_object_add(csc_answer, "text", json_object_new_string("Invalid callback data"));
     }
 
-    api_post(config, "answerCallbackQuery", csc_answer);
+    api_post("answerCallbackQuery", csc_answer);
     json_object_put(csc_answer);
 }

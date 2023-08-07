@@ -23,14 +23,13 @@ const char *command_message(json_object *update)
 }
 
 
-int command_compare(json_object *config,
-    const char *input, const char *command_message)
+int command_compare(const char *input, const char *command_message)
 {
     char *ainput = string_duplicate(input);
     char *command = ainput;
     char *space = 0;
     char *at = 0;
-    const char *username = config_get_string(config, BOT_USERNAME);
+    const char *username = config_get_string(BOT_USERNAME);
 
     if (!command)
         return EMEM;
@@ -61,10 +60,12 @@ int command_compare(json_object *config,
     }
 
     free(ainput);
+
     return 0;
 
 err:
     free(ainput);
+
     return EARG;
 }
 
@@ -74,10 +75,7 @@ command_args *command_args_parse(const char *input, size_t n, bool ignore_arg)
     char *arguments = ainput;
     size_t args_l = 0;
     command_args *args = 0;
-    char *separator = 0;
     bool first_arg = ignore_arg;
-    size_t length = 0;
-    char **args_tmp = 0;
 
     if (!arguments)
         return 0;
@@ -104,6 +102,10 @@ command_args *command_args_parse(const char *input, size_t n, bool ignore_arg)
     args->args = 0;
 
     while (args->count < n) {
+        char *separator = 0;
+        size_t length = 0;
+        char **args_tmp = 0;
+
         separator = strchr(arguments, ' ');
 
         if (separator)
