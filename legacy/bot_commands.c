@@ -1,7 +1,7 @@
 #include <api/api.h>
 #include <config/config.h>
 #include <curl/curl.h>
-#include <sankaku/api.h>
+#include <sankaku/sankaku.h>
 #include <parsers/parsers.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -184,8 +184,7 @@ void bot_legacy_command(const char *message_text, json_object *update) {
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
                 } else if(!command_compare(message_text, "post")) {
-                    char csc_info[4096];
-                    sankaku_get_post(csc_info, sizeof(csc_info), csc_data, csc_id);
+                    char *csc_info = sankaku_post(csc_data);
 
                     char csc_button[128];
                     snprintf(csc_button, sizeof(csc_button), "%s/%d", SANKAKU_POST_URL, csc_id);
@@ -214,9 +213,10 @@ void bot_legacy_command(const char *message_text, json_object *update) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
+
+                    free(csc_info);
                 } else if(!command_compare(message_text, "book")) {
-                    char csc_info[20480];
-                    sankaku_get_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
+                    char *csc_info = sankaku_book(csc_data);
 
                     char csc_button[128];
                     snprintf(csc_button, sizeof(csc_button), "%s/%d", SANKAKU_POOL_URL, csc_id);
@@ -252,6 +252,8 @@ void bot_legacy_command(const char *message_text, json_object *update) {
                     json_object_array_add(inline_keyboard1, inline_keyboard2);
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(info, "reply_markup", inline_keyboard);
+
+                    free(csc_info);
                 }
             } else {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
@@ -345,8 +347,7 @@ void bot_legacy_command(const char *message_text, json_object *update) {
             if(csc_id) {
                 const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
-                char csc_tag[20480];
-                sankaku_get_tag(csc_tag, sizeof(csc_tag), csc_data, csc_id);
+                char *csc_tag = sankaku_tag(csc_data);
 
                 char csc_button[1024];
                 snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
@@ -378,6 +379,8 @@ void bot_legacy_command(const char *message_text, json_object *update) {
                 json_object_array_add(inline_keyboard1, inline_keyboard2);
                 json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                 json_object_object_add(tag, "reply_markup", inline_keyboard);
+
+                free(csc_tag);
             } else {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));
 

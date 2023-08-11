@@ -1,7 +1,7 @@
 #include <api/api.h>
 #include <config/config.h>
 #include <curl/curl.h>
-#include <sankaku/api.h>
+#include <sankaku/sankaku.h>
 #include <parsers/parsers.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -113,7 +113,6 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                     const char *csc_file_url = json_object_get_string(json_object_object_get(csc_data, "file_url"));
                     float csc_size = json_object_get_int(json_object_object_get(csc_data, "file_size"));
                     const char *csc_filetype = json_object_get_string(json_object_object_get(csc_data, "file_type"));
-                    time_t rawtime = json_object_get_int(json_object_object_get(json_object_object_get(csc_data, "created_at"), "s"));
 
                     char *csc_rating_s= {0};
 
@@ -224,11 +223,11 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                         csc_sheight = 150;
                     }
 
-                    char csc_date[16 + 1];
-                    sankaku_get_date(csc_date, sizeof(csc_date), rawtime);
+                    char *csc_date = sankaku_date(csc_data);
 
                     char csc_caption[128];
-                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> <code>%s</code>", csc_id, csc_date);
+                    snprintf(csc_caption, sizeof(csc_caption), "<b>ID:</b> <code>%d</code>\n<b>Date:</b> %s", csc_id, csc_date);
+                    free(csc_date);
 
                     char csc_button[128];
                     snprintf(csc_button, sizeof(csc_button), "%s/%d", SANKAKU_POST_URL, csc_id);
@@ -475,8 +474,7 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                     int csc_id = json_object_get_int(json_object_object_get(csc_data, "id"));
                     const char *csc_name = json_object_get_string(json_object_object_get(csc_data, "name"));
 
-                    char csc_tag[20480];
-                    sankaku_get_tag(csc_tag, sizeof(csc_tag), csc_data, csc_id);
+                    char *csc_tag = sankaku_tag(csc_data);
 
                     char csc_button[1024];
                     snprintf(csc_button, sizeof(csc_button), "1a %s", csc_name);
@@ -511,6 +509,8 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                     json_object_object_add(inline_keyboard, "inline_keyboard", inline_keyboard1);
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                     json_object_object_add(csc_result, "description", json_object_new_string("Click to send tag information"));
+
+                    free(csc_tag);
                 }
                 json_object_array_add(csc_results, csc_result);
                 array++;
@@ -628,8 +628,7 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                 } else if(!inline_compare(inline_query_data, "post")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
-                    char csc_info[4096];
-                    sankaku_get_post(csc_info, sizeof(csc_info), csc_data, csc_id);
+                    char *csc_info = sankaku_post(csc_data);
 
                     char csc_title[32];
                     snprintf(csc_title, sizeof(csc_title), "Post %d", csc_id);
@@ -667,11 +666,12 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                     json_object_object_add(csc_result, "description", json_object_new_string("Click to send post information"));
                     json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : SANKAKU_DPREVIEW_URL));
+
+                    free(csc_info);
                 } else if(!inline_compare(inline_query_data, "book")) {
                     const char *csc_preview_url = json_object_get_string(json_object_object_get(csc_data, "preview_url"));
 
-                    char csc_info[20480];
-                    sankaku_get_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
+                    char *csc_info = sankaku_book(csc_data);
 
                     char csc_title[32];
                     snprintf(csc_title, sizeof(csc_title), "Book %d", csc_id);
@@ -716,6 +716,8 @@ void bot_legacy_inline(const char *inline_query_data, json_object *update) {
                     json_object_object_add(csc_result, "reply_markup", inline_keyboard);
                     json_object_object_add(csc_result, "description", json_object_new_string("Click to send book information"));
                     json_object_object_add(csc_result, "thumb_url", json_object_new_string(csc_preview_url ? csc_preview_url : SANKAKU_DPREVIEW_URL));
+
+                    free(csc_info);
                 }
             } else {
                 const char *error_code = json_object_get_string(json_object_object_get(csc_data, "code"));

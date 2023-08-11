@@ -39,9 +39,9 @@ static json_object *api_io(const char *method, json_object *json)
             + strlen(SUB_ADDRESS)
             + strlen(token)
             + strlen(method)
-            + 2;
+            + 1;
 
-    url = malloc(length);
+    url = malloc(length + 1);
 
     if (!url) {
         debug_log(EMEM, "api_io: %s", debug_message(EMEM));
@@ -85,7 +85,7 @@ static json_object *api_io(const char *method, json_object *json)
     curl_easy_setopt(request,
             CURLOPT_WRITEDATA, &string);
     curl_easy_setopt(request,
-            CURLOPT_WRITEFUNCTION, string_curl_writefunction);
+            CURLOPT_WRITEFUNCTION, string_curl);
 
     error = curl_easy_perform(request);
 

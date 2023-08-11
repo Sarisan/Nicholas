@@ -147,16 +147,17 @@ size_t command_args_count(command_args *args)
 {
     if (args)
         return args->count;
-    else
-        return 0;
+
+    return 0;
 }
 
 const char *command_args_get(command_args *args, size_t n)
 {
     if (args)
-        return args->args[n];
-    else
-        return 0;
+        if (n < args->count)
+            return args->args[n];
+
+    return 0;
 }
 
 void command_args_free(command_args *args)

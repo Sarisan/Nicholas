@@ -2,12 +2,10 @@
 #include <stdio.h>
 #include <version.h>
 
-void init_help(const char *arg)
+void init_help(const char *command)
 {
-    printf("Nicholas Bot %d.%d\n",
-            Nicholas_VERSION_MAJOR,
-            Nicholas_VERSION_MINOR);
-    printf("Usage: %s [options]\n", arg);
+    printf("Nicholas Bot %u.%u\n", VERSION_MAJOR, VERSION_MINOR);
+    printf("Usage: %s [options]\n", command);
     printf("  -h, --help\t\tShow this message\n");
     printf("  -s, --server=<arg>\tTelegram Bot "
             "API server, default: 0.0.0.0:8081\n");

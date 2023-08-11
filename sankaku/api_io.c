@@ -2,14 +2,14 @@
 #include <curl/curl.h>
 #include <debug/debug.h>
 #include <json/json.h>
-#include <sankaku/api.h>
+#include <sankaku/sankaku.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string/string.h>
 
-#define TIMEOUT 5L
+#define TIMEOUT 8L
 #define ADDRESS "https://capi-v2.sankakucomplex.com/"
 #define AUTH "auth/token"
 #define HTTP_JSON "Content-Type: application/json"
@@ -64,7 +64,7 @@ static json_object *sankaku_io(const char *url,
     curl_easy_setopt(sankaku,
             CURLOPT_WRITEDATA, &string);
     curl_easy_setopt(sankaku,
-            CURLOPT_WRITEFUNCTION, string_curl_writefunction);
+            CURLOPT_WRITEFUNCTION, string_curl);
 
     error = curl_easy_perform(sankaku);
 
@@ -111,6 +111,7 @@ int sankaku_authorization(void)
     json_object *login_object = 0;
     const char *token = 0;
     char *header = 0;
+    int error = 0;
 
     debug_log(0, "sankaku_authorization: Refreshing access token...");
 
@@ -126,7 +127,7 @@ int sankaku_authorization(void)
         return EDAT;
     }
 
-    length = strlen(ADDRESS) + strlen(AUTH) + 1;
+    length = strlen(ADDRESS) + strlen(AUTH);
     login_field = json_new();
 
     if (!login_field) {
@@ -139,7 +140,7 @@ int sankaku_authorization(void)
     json_add_string(login_field, "password", password);
 
     field = json_to_string(login_field);
-    url = malloc(length);
+    url = malloc(length + 1);
 
     if(!url) {
         debug_log(EMEM, "sankaku_authorization: %s", debug_message(EMEM));
@@ -148,7 +149,7 @@ int sankaku_authorization(void)
         return EMEM;
     }
 
-    snprintf(url, length, "%s%s", ADDRESS, AUTH);
+    sprintf(url, "%s%s", ADDRESS, AUTH);
 
     login_object = sankaku_io(url, field, HTTP_JSON);
 
@@ -177,11 +178,19 @@ int sankaku_authorization(void)
     }
 
     sprintf(header, HTTP_HEADER, token);
-    config_set_string(SANKAKU_TOKEN, header);
-    debug_log(0, "sankaku_authorization: Successful");
+
+    error = config_set_string(SANKAKU_TOKEN, header);
 
     free(header);
     json_put(login_object);
+
+    if(error) {
+        debug_log(EINV, "sankaku_authorization: Failed");
+
+        return EINV;
+    }
+
+    debug_log(0, "sankaku_authorization: Successful");
 
     return 0;
 }
@@ -203,8 +212,8 @@ json_object *sankaku_request(const char *api_data, ...)
     vsnprintf(args_string, REQUEST_LENGHT, api_data, args);
     va_end(args);
 
-    length = strlen(ADDRESS) + strlen(args_string) + 1;
-    url = malloc(length);
+    length = strlen(ADDRESS) + strlen(args_string);
+    url = malloc(length + 1);
 
     if (!url) {
         debug_log(EMEM, "sankaku_request: %s", debug_message(EMEM));
@@ -212,7 +221,7 @@ json_object *sankaku_request(const char *api_data, ...)
         return 0;
     }
 
-    snprintf(url, length, "%s%s", ADDRESS, args_string);
+    sprintf(url, "%s%s", ADDRESS, args_string);
 
     data = sankaku_io(url, 0, token);
 

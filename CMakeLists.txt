@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Nicholas VERSION 0.3 LANGUAGES C)
+project(Nicholas VERSION 0.4 LANGUAGES C)
 
 configure_file(version.h.in version.h)
 
@@ -67,7 +67,7 @@ set(CONFIG_SOURCE
 set(DEBUG_SOURCE
   debug/debug.c)
 
-set(INIT_SOURCE 
+set(INIT_SOURCE
   init/help.c
   init/init.c
   init/main.c)
@@ -87,7 +87,7 @@ set(PARSERS_SOURCE
 
 set(SANKAKU_SOURCE
   sankaku/api_io.c
-  sankaku/legacy_parsers.c)
+  sankaku/parsers.c)
 
 set(STRING_SOURCE
   string/string.c)
@@ -101,7 +101,7 @@ add_executable(nicholas
   ${LEGACY_SOURCE}
   ${PARSERS_SOURCE}
   ${SANKAKU_SOURCE}
-  ${STRING_SOURCE}) 
+  ${STRING_SOURCE})
 
 target_include_directories(nicholas PUBLIC
   "${PROJECT_BINARY_DIR}"

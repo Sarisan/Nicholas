@@ -1,6 +1,6 @@
 #include <api/api.h>
 #include <config/config.h>
-#include <sankaku/api.h>
+#include <sankaku/sankaku.h>
 #include <parsers/parsers.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -176,8 +176,7 @@ void bot_legacy_callback(const char *callback_data, json_object *update) {
                     json_object_object_add(csc_answer, "text", json_object_new_string("No tags found"));
                 }
             } else if(action == 3) {
-                char csc_info[4096];
-                sankaku_get_post(csc_info, sizeof(csc_info), csc_data, csc_id);
+                char *csc_info = sankaku_post(csc_data);
 
                 char csc_button[128];
                 snprintf(csc_button, sizeof(csc_button), "%s/%d", SANKAKU_POST_URL, csc_id);
@@ -219,9 +218,9 @@ void bot_legacy_callback(const char *callback_data, json_object *update) {
 
                 api_post("editMessageText", info);
                 json_object_put(info);
+                free(csc_info);
             } else if(action == 4) {
-                char csc_info[20480];
-                sankaku_get_pool(csc_info, sizeof(csc_info), csc_data, csc_id);
+                char *csc_info = sankaku_book(csc_data);
 
                 char csc_button[128];
                 snprintf(csc_button, sizeof(csc_button), "%s/%d", SANKAKU_POOL_URL, csc_id);
@@ -270,6 +269,7 @@ void bot_legacy_callback(const char *callback_data, json_object *update) {
 
                 api_post("editMessageText", info);
                 json_object_put(info);
+                free(csc_info);
             } else if(action == 5) {
                 short pages_array = data > 1 ? offset - 20 * (data - 1) : offset;
                 json_object *csc_page = json_object_array_get_idx(csc_data, pages_array);

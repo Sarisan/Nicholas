@@ -1,4 +1,3 @@
-#include <json/json.h>
 #include <stdint.h>
 
 #define BOT_SERVER "bot_server"

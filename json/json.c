@@ -9,23 +9,23 @@ json_object *json_get(json_object *object, const char *path)
     json_object *ret_object = object;
     char *apath = string_duplicate(path);
     char *point = 0;
-    char *keyword = apath;
+    char *key = apath;
 
-    if (!keyword)
+    if (!key)
         return 0;
 
     while (true) {
-        point = strchr(keyword, '.');
+        point = strchr(key, '.');
 
         if (point)
             point[0] = 0;
 
-        ret_object = json_object_object_get(ret_object, keyword);
+        ret_object = json_object_object_get(ret_object, key);
 
         if (!point || !ret_object)
             break;
 
-        keyword = &point[1];
+        key = &point[1];
     }
 
     free(apath);

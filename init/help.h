@@ -1,1 +1,1 @@
-void init_help(const char *arg);
+void init_help(const char *command);

@@ -5,7 +5,7 @@
 #include <legacy/legacy.h>
 #include <parsers/parsers.h>
 #include <threads.h>
-#include <sankaku/api.h>
+#include <sankaku/sankaku.h>
 #include <signal.h>
 #include <stdatomic.h>
 
@@ -132,7 +132,7 @@ static void init_pool_add(json_object *update)
     mtx_unlock(&pool_mtx);
 }
 
-int init_bot()
+int init_bot(void)
 {
     int username = 0;
     int sankaku = 0;
