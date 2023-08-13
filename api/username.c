@@ -35,6 +35,8 @@ int api_username(void)
         return EINV;
     }
 
+    username = config_get_string(BOT_USERNAME);
+
     debug_log(0, "api_username: Username: %s", username);
     debug_log(0, "api_username: Successful");
 
